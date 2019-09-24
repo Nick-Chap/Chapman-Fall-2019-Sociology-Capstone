@@ -1,0 +1,40 @@
+---
+title: "Create Clean Data"
+author: "Nick chapman"
+date: '(`r format(Sys.time(), "%B %d, %Y")`)'
+output: 
+  github_document: default
+  html_notebook: default 
+---
+
+## Introduction
+This notebook contains the code to download demographic data from `tidycensus` for the State of Missouri, a `.shp` file of the counties of Missouri from `tigris` and to clean the data from each of them.
+
+## Dependencies
+This notebook requires a few packages:
+
+```{r load-packages}
+# tidyverse packages
+library(tidycensus)
+library(tigris)
+library(dplyr)
+```
+
+## Load Data
+This notebook requires data downloaded, saved to the `data/raw/` folder, as well as data downloaded from `tigris` and `tidycensus`:
+
+### Load Population Data
+
+`B99187_001` is the variable for: “Estimate!!Total”, I will use this to get a Population for each county in Missouri, as well as a Population Density:
+```{r load-data}
+MO_population <- get_acs(geography = "county", state = "MO", year = 2015, variable = "B99187_001", survey = "acs5")
+```
+
+### Load Income Data
+
+`B19326_001` is the variable for: “Median income in the past 12 months (in 2017 inflation-adjusted dollars)”:
+
+```{r}
+MO_Income <- get_acs(geography = "county", state = "MO", year = 2015, variable = "B19326_001", survey = "acs5")
+```
+
