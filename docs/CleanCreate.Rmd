@@ -18,6 +18,10 @@ This notebook requires a few packages:
 library(tidycensus)
 library(tigris)
 library(dplyr)
+library(readr)
+library(here)
+library(naniar)
+library(janitor)
 ```
 
 ## Load Data
@@ -26,6 +30,7 @@ This notebook requires data downloaded, saved to the `data/raw/` folder, as well
 ### Load Population Data
 
 `B99187_001` is the variable for: “Estimate!!Total”, I will use this to get a Population for each county in Missouri, as well as a Population Density:
+
 ```{r load-data}
 MO_population <- get_acs(geography = "county", state = "MO", year = 2015, variable = "B99187_001", survey = "acs5")
 ```
@@ -34,7 +39,71 @@ MO_population <- get_acs(geography = "county", state = "MO", year = 2015, variab
 
 `B19326_001` is the variable for: “Median income in the past 12 months (in 2017 inflation-adjusted dollars)”:
 
-```{r}
+```{r MO-County-Data}
 MO_Income <- get_acs(geography = "county", state = "MO", year = 2015, variable = "B19326_001", survey = "acs5")
 ```
+
+### Load Heart Attack Data
+
+This heart attack data was downloaded from Mophim:
+
+```{r read-Mophims-stats}
+Heart_Attack_MO<- read_csv(here("data", "raw", "Heart_Attack_Raw_MOcounty.csv"))
+```
+
+
+Now, I want to make sure I have no missing data:
+
+``` {r demo-missing}
+miss_var_summary(Demo_2017)
+```
+
+```{r heart-missing}
+miss_var_summary(Heart_Attack_MO)
+```
+
+```{r income-missing}
+miss_var_summary(MO_Income)
+```
+
+There are no missing data in any of my data.
+
+### Cleaning Variables
+
+I will first clean up my tables, removing unnecessary variables:
+
+For the heart attack data,`Mapped Value`, `X6`, and `Rank` are unnecessary, for I will rank them myself later:
+
+```{r}
+Heart_Attack_Clean<- select(Heart_Attack_MO, -"X6", -"Rank", -"Mapped Value" )
+```
+
+For the Income data, `variable` and `moe` are cluttered and I will remove them:
+
+```{r}
+MO_Income_Clean<- select(MO_Income, -"variable", -"moe")
+```
+
+For the population data, `variable` is unnecessary and I will remove it:
+
+```{r}
+MO_population_Clean<- select(MO_population, -"variable")
+```
+
+
+Now, I want to rename `FIPS Code` to `GEOID` and make it the same as the income and population data:
+
+```{r}
+Heart_Attack_Clean <- rename(Heart_Attack_Clean, GEOID = "FIPS Code")
+```
+
+```{r}
+Heart_Attack_Clean <-  transform(Heart_Attack_Clean, GEOID = as.numeric(GEOID))
+```
+
+```{r}
+Heart_Attack_Clean <- mutate(Heart_Attack_Clean, GEOID = GEOID +29000)
+```
+
+Now, all of my tables have the same 'GEOID', all of the county level data could now be joined together.
 
