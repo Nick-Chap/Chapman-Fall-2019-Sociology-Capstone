@@ -8,7 +8,7 @@ output:
 ---
 
 ## Introduction
-This notebook contains the code to download demographic data from `tidycensus` for the State of Missouri, a `.shp` file of the counties of Missouri from `tigris` and to clean the data from each of them.
+This notebook contains the code to download demographic data from `tidycensus` for the State of Missouri, a `.shp` file of the counties of Missouri from `tigris`, read .csv files from Missouri's County Health Rankings, and Mophims and to clean the data from each of them.
 
 ## Dependencies
 This notebook requires a few packages:
@@ -22,16 +22,33 @@ library(readr)
 library(here)
 library(naniar)
 library(janitor)
+library(sf)
 ```
 
 ## Load Data
+
 This notebook requires data downloaded, saved to the `data/raw/` folder, as well as data downloaded from `tigris` and `tidycensus`:
+
+### Load Spatial Data
+
+I will load the data for the counties of Missouri, through `tigris`:
+
+```{r load-Mo-Counties}
+moCounties <- counties(state = 29, cb = FALSE)
+```
+
+Now, I need to convert it to an sf object:
+
+```{r}
+moCounties <- st_as_sf(moCounties)
+```
+
 
 ### Load Population Data
 
 `B99187_001` is the variable for: “Estimate!!Total”, I will use this to get a Population for each county in Missouri, as well as a Population Density:
 
-```{r load-data}
+```{r load-pop-data}
 MO_population <- get_acs(geography = "county", state = "MO", year = 2015, variable = "B99187_001", survey = "acs5")
 ```
 
@@ -51,59 +68,67 @@ This heart attack data was downloaded from Mophim:
 Heart_Attack_MO<- read_csv(here("data", "raw", "Heart_Attack_Raw_MOcounty.csv"))
 ```
 
+### Load County Health Ranking Data
 
-Now, I want to make sure I have no missing data:
-
-``` {r demo-missing}
-miss_var_summary(Demo_2017)
+```{r read-county-ranking-csv}
+county_rankings<- read_csv(here("data", "raw", "county_rankings.csv"))
 ```
 
-```{r heart-missing}
-miss_var_summary(Heart_Attack_MO)
-```
 
-```{r income-missing}
-miss_var_summary(MO_Income)
-```
-
-There are no missing data in any of my data.
-
-### Cleaning Variables
+## Cleaning Variables
 
 I will first clean up my tables, removing unnecessary variables:
 
+### Clean Heart Attack Data
+
 For the heart attack data,`Mapped Value`, `X6`, and `Rank` are unnecessary, for I will rank them myself later:
 
-```{r}
+```{r clean-heart-vars}
 Heart_Attack_Clean<- select(Heart_Attack_MO, -"X6", -"Rank", -"Mapped Value" )
 ```
 
-For the Income data, `variable` and `moe` are cluttered and I will remove them:
+Now, I want to rename `FIPS Code` to `GEOID` and make it the same value as the income and population data:
 
-```{r}
-MO_Income_Clean<- select(MO_Income, -"variable", -"moe")
-```
-
-For the population data, `variable` is unnecessary and I will remove it:
-
-```{r}
-MO_population_Clean<- select(MO_population, -"variable")
-```
-
-
-Now, I want to rename `FIPS Code` to `GEOID` and make it the same as the income and population data:
-
-```{r}
+```{r rename-heart-fips}
 Heart_Attack_Clean <- rename(Heart_Attack_Clean, GEOID = "FIPS Code")
 ```
 
-```{r}
+```{r transform-heart-geoid}
 Heart_Attack_Clean <-  transform(Heart_Attack_Clean, GEOID = as.numeric(GEOID))
 ```
 
-```{r}
+```{r mutate-heart-geoid}
 Heart_Attack_Clean <- mutate(Heart_Attack_Clean, GEOID = GEOID +29000)
 ```
+
+### Clean Income Data
+
+For the Income data, `variable` and `moe` are unnecessary and I will remove them:
+
+```{r select-income-vars}
+MO_Income_Clean<- select(MO_Income, -"variable", -"moe")
+```
+
+### Clean Population Data
+
+For the population data, `variable` is unnecessary and I will remove it:
+
+```{r select-pop-vars}
+MO_population_Clean<- select(MO_population, -"variable")
+```
+
+### Clean County Ranking Data
+
+```{r select-county-health-vars}
+County_Rankings_Clean <- select(county_rankings, "X1", "X3", "Adult smoking", "Adult obesity", "Food environment index", "Physical inactivity", "Access to exercise opportunities")
+```
+
+```{r rename-county-health}
+County_Rankings_Clean <- rename(County_Rankings_Clean, GEOID = "X1")
+County_Rankings_Clean <- rename(County_Rankings_Clean, County = "X3")
+County_Rankings_Clean <- County_Rankings_Clean[-c(1,2),]
+```
+
 
 Now, all of my tables have the same 'GEOID', all of the county level data could now be joined together.
 

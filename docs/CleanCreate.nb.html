@@ -1746,7 +1746,7 @@ summary {
 
 <h1 class="title toc-ignore">Create Clean Data</h1>
 <h4 class="author">Nick chapman</h4>
-<h4 class="date">(October 01, 2019)</h4>
+<h4 class="date">(October 07, 2019)</h4>
 
 </div>
 
@@ -1754,14 +1754,14 @@ summary {
 <!-- rnb-text-begin -->
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>This notebook contains the code to download demographic data from <code>tidycensus</code> for the State of Missouri, a <code>.shp</code> file of the counties of Missouri from <code>tigris</code> and to clean the data from each of them.</p>
+<p>This notebook contains the code to download demographic data from <code>tidycensus</code> for the State of Missouri, a <code>.shp</code> file of the counties of Missouri from <code>tigris</code>, read .csv files from Missouri’s County Health Rankings, and Mophims and to clean the data from each of them.</p>
 </div>
 <div id="dependencies" class="section level2">
 <h2>Dependencies</h2>
 <p>This notebook requires a few packages:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0aWR5dmVyc2UgcGFja2FnZXNcbmxpYnJhcnkodGlkeWNlbnN1cylcbmxpYnJhcnkodGlncmlzKVxubGlicmFyeShkcGx5cilcbmxpYnJhcnkocmVhZHIpXG5saWJyYXJ5KGhlcmUpXG5saWJyYXJ5KG5hbmlhcilcbmxpYnJhcnkoamFuaXRvcilcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0aWR5dmVyc2UgcGFja2FnZXNcbmxpYnJhcnkodGlkeWNlbnN1cylcbmxpYnJhcnkodGlncmlzKVxubGlicmFyeShkcGx5cilcbmxpYnJhcnkocmVhZHIpXG5saWJyYXJ5KGhlcmUpXG5saWJyYXJ5KG5hbmlhcilcbmxpYnJhcnkoamFuaXRvcilcbmxpYnJhcnkoc2YpXG5gYGAifQ== -->
 <pre class="r"><code># tidyverse packages
 library(tidycensus)
 library(tigris)
@@ -1769,15 +1769,11 @@ library(dplyr)
 library(readr)
 library(here)
 library(naniar)
-library(janitor)</code></pre>
+library(janitor)
+library(sf)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog46S847ixamFuaXRvcuOkvOO4slxuXG5UaGUgZm9sbG93aW5nIG9iamVjdHMgYXJlIG1hc2tlZCBmcm9tIOOkvOO4sXBhY2thZ2U6c3RhdHPjpLzjuLI6XG5cbiAgICBjaGlzcS50ZXN0LCBmaXNoZXIudGVzdFxuIn0= -->
-<pre><code>
-Attaching package: 㤼㸱janitor㤼㸲
-
-The following objects are masked from 㤼㸱package:stats㤼㸲:
-
-    chisq.test, fisher.test</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiTGlua2luZyB0byBHRU9TIDMuNi4xLCBHREFMIDIuMi4zLCBQUk9KIDQuOS4zXG4ifQ== -->
+<pre><code>Linking to GEOS 3.6.1, GDAL 2.2.3, PROJ 4.9.3</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1785,6 +1781,25 @@ The following objects are masked from 㤼㸱package:stats㤼㸲:
 <div id="load-data" class="section level2">
 <h2>Load Data</h2>
 <p>This notebook requires data downloaded, saved to the <code>data/raw/</code> folder, as well as data downloaded from <code>tigris</code> and <code>tidycensus</code>:</p>
+<div id="load-spatial-data" class="section level3">
+<h3>Load Spatial Data</h3>
+<p>I will load the data for the counties of Missouri, through <code>tigris</code>:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9Db3VudGllcyA8LSBjb3VudGllcyhzdGF0ZSA9IDI5LCBjYiA9IEZBTFNFKVxuYGBgIn0= -->
+<pre class="r"><code>moCounties &lt;- counties(state = 29, cb = FALSE)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Now, I need to convert it to an sf object:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9Db3VudGllcyA8LSBzdF9hc19zZihtb0NvdW50aWVzKVxuYGBgIn0= -->
+<pre class="r"><code>moCounties &lt;- st_as_sf(moCounties)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
 <div id="load-population-data" class="section level3">
 <h3>Load Population Data</h3>
 <p><code>B99187_001</code> is the variable for: “Estimate!!Total”, I will use this to get a Population for each county in Missouri, as well as a Population Density:</p>
@@ -1793,6 +1808,10 @@ The following objects are masked from 㤼㸱package:stats㤼㸲:
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTU9fcG9wdWxhdGlvbiA8LSBnZXRfYWNzKGdlb2dyYXBoeSA9IFwiY291bnR5XCIsIHN0YXRlID0gXCJNT1wiLCB5ZWFyID0gMjAxNSwgdmFyaWFibGUgPSBcIkI5OTE4N18wMDFcIiwgc3VydmV5ID0gXCJhY3M1XCIpXG5gYGAifQ== -->
 <pre class="r"><code>MO_population &lt;- get_acs(geography = &quot;county&quot;, state = &quot;MO&quot;, year = 2015, variable = &quot;B99187_001&quot;, survey = &quot;acs5&quot;)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiR2V0dGluZyBkYXRhIGZyb20gdGhlIDIwMTEtMjAxNSA1LXllYXIgQUNTXG5Vc2luZyBGSVBTIGNvZGUgJzI5JyBmb3Igc3RhdGUgJ01PJ1xuIn0= -->
+<pre><code>Getting data from the 2011-2015 5-year ACS
+Using FIPS code &#39;29&#39; for state &#39;MO&#39;</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1804,6 +1823,10 @@ The following objects are masked from 㤼㸱package:stats㤼㸲:
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTU9fSW5jb21lIDwtIGdldF9hY3MoZ2VvZ3JhcGh5ID0gXCJjb3VudHlcIiwgc3RhdGUgPSBcIk1PXCIsIHllYXIgPSAyMDE1LCB2YXJpYWJsZSA9IFwiQjE5MzI2XzAwMVwiLCBzdXJ2ZXkgPSBcImFjczVcIilcbmBgYCJ9 -->
 <pre class="r"><code>MO_Income &lt;- get_acs(geography = &quot;county&quot;, state = &quot;MO&quot;, year = 2015, variable = &quot;B19326_001&quot;, survey = &quot;acs5&quot;)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiR2V0dGluZyBkYXRhIGZyb20gdGhlIDIwMTEtMjAxNSA1LXllYXIgQUNTXG5Vc2luZyBGSVBTIGNvZGUgJzI5JyBmb3Igc3RhdGUgJ01PJ1xuIn0= -->
+<pre><code>Getting data from the 2011-2015 5-year ACS
+Using FIPS code &#39;29&#39; for state &#39;MO&#39;</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1815,35 +1838,36 @@ The following objects are masked from 㤼㸱package:stats㤼㸲:
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuSGVhcnRfQXR0YWNrX01PPC0gcmVhZF9jc3YoaGVyZShcImRhdGFcIiwgXCJyYXdcIiwgXCJIZWFydF9BdHRhY2tfUmF3X01PY291bnR5LmNzdlwiKSlcbmBgYCJ9 -->
 <pre class="r"><code>Heart_Attack_MO&lt;- read_csv(here(&quot;data&quot;, &quot;raw&quot;, &quot;Heart_Attack_Raw_MOcounty.csv&quot;))</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiTWlzc2luZyBjb2x1bW4gbmFtZXMgZmlsbGVkIGluOiAnWDYnIFs2XVBhcnNlZCB3aXRoIGNvbHVtbiBzcGVjaWZpY2F0aW9uOlxuY29scyhcbiAgR2VvZ3JhcGh5ID0gXHUwMDFiWzMxbWNvbF9jaGFyYWN0ZXIoKVx1MDAxYlszOW0sXG4gIGBGSVBTIENvZGVgID0gXHUwMDFiWzMxbWNvbF9jaGFyYWN0ZXIoKVx1MDAxYlszOW0sXG4gIFJhbmsgPSBcdTAwMWJbMzFtY29sX2NoYXJhY3RlcigpXHUwMDFiWzM5bSxcbiAgYE1hcHBlZCBWYWx1ZWAgPSBcdTAwMWJbMzFtY29sX2NoYXJhY3RlcigpXHUwMDFiWzM5bSxcbiAgQ291bnQgPSBcdTAwMWJbMzFtY29sX2NoYXJhY3RlcigpXHUwMDFiWzM5bSxcbiAgWDYgPSBcdTAwMWJbMzNtY29sX2xvZ2ljYWwoKVx1MDAxYlszOW1cbilcbiJ9 -->
+<pre><code>Missing column names filled in: &#39;X6&#39; [6]Parsed with column specification:
+cols(
+  Geography = [31mcol_character()[39m,
+  `FIPS Code` = [31mcol_character()[39m,
+  Rank = [31mcol_character()[39m,
+  `Mapped Value` = [31mcol_character()[39m,
+  Count = [31mcol_character()[39m,
+  X6 = [33mcol_logical()[39m
+)</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Now, I want to make sure I have no missing data:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlzc192YXJfc3VtbWFyeShEZW1vXzIwMTcpXG5gYGAifQ== -->
-<pre class="r"><code>miss_var_summary(Demo_2017)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlzc192YXJfc3VtbWFyeShIZWFydF9BdHRhY2tfTU8pXG5gYGAifQ== -->
-<pre class="r"><code>miss_var_summary(Heart_Attack_MO)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlzc192YXJfc3VtbWFyeShNT19JbmNvbWUpXG5gYGAifQ== -->
-<pre class="r"><code>miss_var_summary(MO_Income)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>There are no missing data in any of my data.</p>
 </div>
-<div id="cleaning-variables" class="section level3">
-<h3>Cleaning Variables</h3>
+<div id="load-county-health-ranking-data" class="section level3">
+<h3>Load County Health Ranking Data</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY291bnR5X3JhbmtpbmdzPC0gcmVhZF9jc3YoaGVyZShcImRhdGFcIiwgXCJyYXdcIiwgXCJjb3VudHlfcmFua2luZ3MuY3N2XCIpKVxuYGBgIn0= -->
+<pre class="r"><code>county_rankings&lt;- read_csv(here(&quot;data&quot;, &quot;raw&quot;, &quot;county_rankings.csv&quot;))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="cleaning-variables" class="section level2">
+<h2>Cleaning Variables</h2>
 <p>I will first clean up my tables, removing unnecessary variables:</p>
+<div id="clean-heart-attack-data" class="section level3">
+<h3>Clean Heart Attack Data</h3>
 <p>For the heart attack data,<code>Mapped Value</code>, <code>X6</code>, and <code>Rank</code> are unnecessary, for I will rank them myself later:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
@@ -1852,23 +1876,7 @@ The following objects are masked from 㤼㸱package:stats㤼㸲:
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>For the Income data, <code>variable</code> and <code>moe</code> are cluttered and I will remove them:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTU9fSW5jb21lX0NsZWFuPC0gc2VsZWN0KE1PX0luY29tZSwgLVwidmFyaWFibGVcIiwgLVwibW9lXCIpXG5gYGAifQ== -->
-<pre class="r"><code>MO_Income_Clean&lt;- select(MO_Income, -&quot;variable&quot;, -&quot;moe&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>For the population data, <code>variable</code> is unnecessary and I will remove it:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTU9fcG9wdWxhdGlvbl9DbGVhbjwtIHNlbGVjdChNT19wb3B1bGF0aW9uLCAtXCJ2YXJpYWJsZVwiKVxuYGBgIn0= -->
-<pre class="r"><code>MO_population_Clean&lt;- select(MO_population, -&quot;variable&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Now, I want to rename <code>FIPS Code</code> to <code>GEOID</code> and make it the same as the income and population data:</p>
+<p>Now, I want to rename <code>FIPS Code</code> to <code>GEOID</code> and make it the same value as the income and population data:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuSGVhcnRfQXR0YWNrX0NsZWFuIDwtIHJlbmFtZShIZWFydF9BdHRhY2tfQ2xlYW4sIEdFT0lEID0gXCJGSVBTIENvZGVcIilcbmBgYCJ9 -->
@@ -1890,12 +1898,51 @@ The following objects are masked from 㤼㸱package:stats㤼㸲:
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+</div>
+<div id="clean-income-data" class="section level3">
+<h3>Clean Income Data</h3>
+<p>For the Income data, <code>variable</code> and <code>moe</code> are unnecessary and I will remove them:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTU9fSW5jb21lX0NsZWFuPC0gc2VsZWN0KE1PX0luY29tZSwgLVwidmFyaWFibGVcIiwgLVwibW9lXCIpXG5gYGAifQ== -->
+<pre class="r"><code>MO_Income_Clean&lt;- select(MO_Income, -&quot;variable&quot;, -&quot;moe&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="clean-population-data" class="section level3">
+<h3>Clean Population Data</h3>
+<p>For the population data, <code>variable</code> is unnecessary and I will remove it:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTU9fcG9wdWxhdGlvbl9DbGVhbjwtIHNlbGVjdChNT19wb3B1bGF0aW9uLCAtXCJ2YXJpYWJsZVwiKVxuYGBgIn0= -->
+<pre class="r"><code>MO_population_Clean&lt;- select(MO_population, -&quot;variable&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="clean-county-ranking-data" class="section level3">
+<h3>Clean County Ranking Data</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQ291bnR5X1JhbmtpbmdzX0NsZWFuIDwtIHNlbGVjdChjb3VudHlfcmFua2luZ3MsIFwiWDFcIiwgXCJYM1wiLCBcIkFkdWx0IHNtb2tpbmdcIiwgXCJBZHVsdCBvYmVzaXR5XCIsIFwiRm9vZCBlbnZpcm9ubWVudCBpbmRleFwiLCBcIlBoeXNpY2FsIGluYWN0aXZpdHlcIiwgXCJBY2Nlc3MgdG8gZXhlcmNpc2Ugb3Bwb3J0dW5pdGllc1wiKVxuYGBgIn0= -->
+<pre class="r"><code>County_Rankings_Clean &lt;- select(county_rankings, &quot;X1&quot;, &quot;X3&quot;, &quot;Adult smoking&quot;, &quot;Adult obesity&quot;, &quot;Food environment index&quot;, &quot;Physical inactivity&quot;, &quot;Access to exercise opportunities&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuSGVhcnRfQXR0YWNrX0NsZWFuIDwtIG11dGF0ZShIZWFydF9BdHRhY2tfQ2xlYW4sIEdFT0lEID0gR0VPSUQgKzI5MDAwKVxuYGBgIn0= -->
+<pre class="r"><code>Heart_Attack_Clean &lt;- mutate(Heart_Attack_Clean, GEOID = GEOID +29000)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 <p>Now, all of my tables have the same ‘GEOID’, all of the county level data could now be joined together.</p>
 <!-- rnb-text-end -->
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkNyZWF0ZSBDbGVhbiBEYXRhIg0KYXV0aG9yOiAiTmljayBjaGFwbWFuIg0KZGF0ZTogJyhgciBmb3JtYXQoU3lzLnRpbWUoKSwgIiVCICVkLCAlWSIpYCknDQpvdXRwdXQ6IA0KICBnaXRodWJfZG9jdW1lbnQ6IGRlZmF1bHQNCiAgaHRtbF9ub3RlYm9vazogZGVmYXVsdCANCi0tLQ0KDQojIyBJbnRyb2R1Y3Rpb24NClRoaXMgbm90ZWJvb2sgY29udGFpbnMgdGhlIGNvZGUgdG8gZG93bmxvYWQgZGVtb2dyYXBoaWMgZGF0YSBmcm9tIGB0aWR5Y2Vuc3VzYCBmb3IgdGhlIFN0YXRlIG9mIE1pc3NvdXJpLCBhIGAuc2hwYCBmaWxlIG9mIHRoZSBjb3VudGllcyBvZiBNaXNzb3VyaSBmcm9tIGB0aWdyaXNgIGFuZCB0byBjbGVhbiB0aGUgZGF0YSBmcm9tIGVhY2ggb2YgdGhlbS4NCg0KIyMgRGVwZW5kZW5jaWVzDQpUaGlzIG5vdGVib29rIHJlcXVpcmVzIGEgZmV3IHBhY2thZ2VzOg0KDQpgYGB7ciBsb2FkLXBhY2thZ2VzfQ0KIyB0aWR5dmVyc2UgcGFja2FnZXMNCmxpYnJhcnkodGlkeWNlbnN1cykNCmxpYnJhcnkodGlncmlzKQ0KbGlicmFyeShkcGx5cikNCmxpYnJhcnkocmVhZHIpDQpsaWJyYXJ5KGhlcmUpDQpsaWJyYXJ5KG5hbmlhcikNCmxpYnJhcnkoamFuaXRvcikNCmBgYA0KDQojIyBMb2FkIERhdGENClRoaXMgbm90ZWJvb2sgcmVxdWlyZXMgZGF0YSBkb3dubG9hZGVkLCBzYXZlZCB0byB0aGUgYGRhdGEvcmF3L2AgZm9sZGVyLCBhcyB3ZWxsIGFzIGRhdGEgZG93bmxvYWRlZCBmcm9tIGB0aWdyaXNgIGFuZCBgdGlkeWNlbnN1c2A6DQoNCiMjIyBMb2FkIFBvcHVsYXRpb24gRGF0YQ0KDQpgQjk5MTg3XzAwMWAgaXMgdGhlIHZhcmlhYmxlIGZvcjog4oCcRXN0aW1hdGUhIVRvdGFs4oCdLCBJIHdpbGwgdXNlIHRoaXMgdG8gZ2V0IGEgUG9wdWxhdGlvbiBmb3IgZWFjaCBjb3VudHkgaW4gTWlzc291cmksIGFzIHdlbGwgYXMgYSBQb3B1bGF0aW9uIERlbnNpdHk6DQoNCmBgYHtyIGxvYWQtZGF0YX0NCk1PX3BvcHVsYXRpb24gPC0gZ2V0X2FjcyhnZW9ncmFwaHkgPSAiY291bnR5Iiwgc3RhdGUgPSAiTU8iLCB5ZWFyID0gMjAxNSwgdmFyaWFibGUgPSAiQjk5MTg3XzAwMSIsIHN1cnZleSA9ICJhY3M1IikNCmBgYA0KDQojIyMgTG9hZCBJbmNvbWUgRGF0YQ0KDQpgQjE5MzI2XzAwMWAgaXMgdGhlIHZhcmlhYmxlIGZvcjog4oCcTWVkaWFuIGluY29tZSBpbiB0aGUgcGFzdCAxMiBtb250aHMgKGluIDIwMTcgaW5mbGF0aW9uLWFkanVzdGVkIGRvbGxhcnMp4oCdOg0KDQpgYGB7ciBNTy1Db3VudHktRGF0YX0NCk1PX0luY29tZSA8LSBnZXRfYWNzKGdlb2dyYXBoeSA9ICJjb3VudHkiLCBzdGF0ZSA9ICJNTyIsIHllYXIgPSAyMDE1LCB2YXJpYWJsZSA9ICJCMTkzMjZfMDAxIiwgc3VydmV5ID0gImFjczUiKQ0KYGBgDQoNCiMjIyBMb2FkIEhlYXJ0IEF0dGFjayBEYXRhDQoNClRoaXMgaGVhcnQgYXR0YWNrIGRhdGEgd2FzIGRvd25sb2FkZWQgZnJvbSBNb3BoaW06DQoNCmBgYHtyIHJlYWQtTW9waGltcy1zdGF0c30NCkhlYXJ0X0F0dGFja19NTzwtIHJlYWRfY3N2KGhlcmUoImRhdGEiLCAicmF3IiwgIkhlYXJ0X0F0dGFja19SYXdfTU9jb3VudHkuY3N2IikpDQpgYGANCg0KDQpOb3csIEkgd2FudCB0byBtYWtlIHN1cmUgSSBoYXZlIG5vIG1pc3NpbmcgZGF0YToNCg0KYGBgIHtyIGRlbW8tbWlzc2luZ30NCm1pc3NfdmFyX3N1bW1hcnkoRGVtb18yMDE3KQ0KYGBgDQoNCmBgYHtyIGhlYXJ0LW1pc3Npbmd9DQptaXNzX3Zhcl9zdW1tYXJ5KEhlYXJ0X0F0dGFja19NTykNCmBgYA0KDQpgYGB7ciBpbmNvbWUtbWlzc2luZ30NCm1pc3NfdmFyX3N1bW1hcnkoTU9fSW5jb21lKQ0KYGBgDQoNClRoZXJlIGFyZSBubyBtaXNzaW5nIGRhdGEgaW4gYW55IG9mIG15IGRhdGEuDQoNCiMjIyBDbGVhbmluZyBWYXJpYWJsZXMNCg0KSSB3aWxsIGZpcnN0IGNsZWFuIHVwIG15IHRhYmxlcywgcmVtb3ZpbmcgdW5uZWNlc3NhcnkgdmFyaWFibGVzOg0KDQpGb3IgdGhlIGhlYXJ0IGF0dGFjayBkYXRhLGBNYXBwZWQgVmFsdWVgLCBgWDZgLCBhbmQgYFJhbmtgIGFyZSB1bm5lY2Vzc2FyeSwgZm9yIEkgd2lsbCByYW5rIHRoZW0gbXlzZWxmIGxhdGVyOg0KDQpgYGB7cn0NCkhlYXJ0X0F0dGFja19DbGVhbjwtIHNlbGVjdChIZWFydF9BdHRhY2tfTU8sIC0iWDYiLCAtIlJhbmsiLCAtIk1hcHBlZCBWYWx1ZSIgKQ0KYGBgDQoNCkZvciB0aGUgSW5jb21lIGRhdGEsIGB2YXJpYWJsZWAgYW5kIGBtb2VgIGFyZSBjbHV0dGVyZWQgYW5kIEkgd2lsbCByZW1vdmUgdGhlbToNCg0KYGBge3J9DQpNT19JbmNvbWVfQ2xlYW48LSBzZWxlY3QoTU9fSW5jb21lLCAtInZhcmlhYmxlIiwgLSJtb2UiKQ0KYGBgDQoNCkZvciB0aGUgcG9wdWxhdGlvbiBkYXRhLCBgdmFyaWFibGVgIGlzIHVubmVjZXNzYXJ5IGFuZCBJIHdpbGwgcmVtb3ZlIGl0Og0KDQpgYGB7cn0NCk1PX3BvcHVsYXRpb25fQ2xlYW48LSBzZWxlY3QoTU9fcG9wdWxhdGlvbiwgLSJ2YXJpYWJsZSIpDQpgYGANCg0KDQpOb3csIEkgd2FudCB0byByZW5hbWUgYEZJUFMgQ29kZWAgdG8gYEdFT0lEYCBhbmQgbWFrZSBpdCB0aGUgc2FtZSBhcyB0aGUgaW5jb21lIGFuZCBwb3B1bGF0aW9uIGRhdGE6DQoNCmBgYHtyfQ0KSGVhcnRfQXR0YWNrX0NsZWFuIDwtIHJlbmFtZShIZWFydF9BdHRhY2tfQ2xlYW4sIEdFT0lEID0gIkZJUFMgQ29kZSIpDQpgYGANCg0KYGBge3J9DQpIZWFydF9BdHRhY2tfQ2xlYW4gPC0gIHRyYW5zZm9ybShIZWFydF9BdHRhY2tfQ2xlYW4sIEdFT0lEID0gYXMubnVtZXJpYyhHRU9JRCkpDQpgYGANCg0KYGBge3J9DQpIZWFydF9BdHRhY2tfQ2xlYW4gPC0gbXV0YXRlKEhlYXJ0X0F0dGFja19DbGVhbiwgR0VPSUQgPSBHRU9JRCArMjkwMDApDQpgYGANCg0KTm93LCBhbGwgb2YgbXkgdGFibGVzIGhhdmUgdGhlIHNhbWUgJ0dFT0lEJywgYWxsIG9mIHRoZSBjb3VudHkgbGV2ZWwgZGF0YSBjb3VsZCBub3cgYmUgam9pbmVkIHRvZ2V0aGVyLg0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkNyZWF0ZSBDbGVhbiBEYXRhIg0KYXV0aG9yOiAiTmljayBjaGFwbWFuIg0KZGF0ZTogJyhgciBmb3JtYXQoU3lzLnRpbWUoKSwgIiVCICVkLCAlWSIpYCknDQpvdXRwdXQ6IA0KICBnaXRodWJfZG9jdW1lbnQ6IGRlZmF1bHQNCiAgaHRtbF9ub3RlYm9vazogZGVmYXVsdCANCi0tLQ0KDQojIyBJbnRyb2R1Y3Rpb24NClRoaXMgbm90ZWJvb2sgY29udGFpbnMgdGhlIGNvZGUgdG8gZG93bmxvYWQgZGVtb2dyYXBoaWMgZGF0YSBmcm9tIGB0aWR5Y2Vuc3VzYCBmb3IgdGhlIFN0YXRlIG9mIE1pc3NvdXJpLCBhIGAuc2hwYCBmaWxlIG9mIHRoZSBjb3VudGllcyBvZiBNaXNzb3VyaSBmcm9tIGB0aWdyaXNgLCByZWFkIC5jc3YgZmlsZXMgZnJvbSBNaXNzb3VyaSdzIENvdW50eSBIZWFsdGggUmFua2luZ3MsIGFuZCBNb3BoaW1zIGFuZCB0byBjbGVhbiB0aGUgZGF0YSBmcm9tIGVhY2ggb2YgdGhlbS4NCg0KIyMgRGVwZW5kZW5jaWVzDQpUaGlzIG5vdGVib29rIHJlcXVpcmVzIGEgZmV3IHBhY2thZ2VzOg0KDQpgYGB7ciBsb2FkLXBhY2thZ2VzfQ0KIyB0aWR5dmVyc2UgcGFja2FnZXMNCmxpYnJhcnkodGlkeWNlbnN1cykNCmxpYnJhcnkodGlncmlzKQ0KbGlicmFyeShkcGx5cikNCmxpYnJhcnkocmVhZHIpDQpsaWJyYXJ5KGhlcmUpDQpsaWJyYXJ5KG5hbmlhcikNCmxpYnJhcnkoamFuaXRvcikNCmxpYnJhcnkoc2YpDQpgYGANCg0KIyMgTG9hZCBEYXRhDQoNClRoaXMgbm90ZWJvb2sgcmVxdWlyZXMgZGF0YSBkb3dubG9hZGVkLCBzYXZlZCB0byB0aGUgYGRhdGEvcmF3L2AgZm9sZGVyLCBhcyB3ZWxsIGFzIGRhdGEgZG93bmxvYWRlZCBmcm9tIGB0aWdyaXNgIGFuZCBgdGlkeWNlbnN1c2A6DQoNCiMjIyBMb2FkIFNwYXRpYWwgRGF0YQ0KDQpJIHdpbGwgbG9hZCB0aGUgZGF0YSBmb3IgdGhlIGNvdW50aWVzIG9mIE1pc3NvdXJpLCB0aHJvdWdoIGB0aWdyaXNgOg0KDQpgYGB7ciBsb2FkLU1vLUNvdW50aWVzfQ0KbW9Db3VudGllcyA8LSBjb3VudGllcyhzdGF0ZSA9IDI5LCBjYiA9IEZBTFNFKQ0KYGBgDQoNCk5vdywgSSBuZWVkIHRvIGNvbnZlcnQgaXQgdG8gYW4gc2Ygb2JqZWN0Og0KDQpgYGB7cn0NCm1vQ291bnRpZXMgPC0gc3RfYXNfc2YobW9Db3VudGllcykNCmBgYA0KDQoNCiMjIyBMb2FkIFBvcHVsYXRpb24gRGF0YQ0KDQpgQjk5MTg3XzAwMWAgaXMgdGhlIHZhcmlhYmxlIGZvcjog4oCcRXN0aW1hdGUhIVRvdGFs4oCdLCBJIHdpbGwgdXNlIHRoaXMgdG8gZ2V0IGEgUG9wdWxhdGlvbiBmb3IgZWFjaCBjb3VudHkgaW4gTWlzc291cmksIGFzIHdlbGwgYXMgYSBQb3B1bGF0aW9uIERlbnNpdHk6DQoNCmBgYHtyIGxvYWQtcG9wLWRhdGF9DQpNT19wb3B1bGF0aW9uIDwtIGdldF9hY3MoZ2VvZ3JhcGh5ID0gImNvdW50eSIsIHN0YXRlID0gIk1PIiwgeWVhciA9IDIwMTUsIHZhcmlhYmxlID0gIkI5OTE4N18wMDEiLCBzdXJ2ZXkgPSAiYWNzNSIpDQpgYGANCg0KIyMjIExvYWQgSW5jb21lIERhdGENCg0KYEIxOTMyNl8wMDFgIGlzIHRoZSB2YXJpYWJsZSBmb3I6IOKAnE1lZGlhbiBpbmNvbWUgaW4gdGhlIHBhc3QgMTIgbW9udGhzIChpbiAyMDE3IGluZmxhdGlvbi1hZGp1c3RlZCBkb2xsYXJzKeKAnToNCg0KYGBge3IgTU8tQ291bnR5LURhdGF9DQpNT19JbmNvbWUgPC0gZ2V0X2FjcyhnZW9ncmFwaHkgPSAiY291bnR5Iiwgc3RhdGUgPSAiTU8iLCB5ZWFyID0gMjAxNSwgdmFyaWFibGUgPSAiQjE5MzI2XzAwMSIsIHN1cnZleSA9ICJhY3M1IikNCmBgYA0KDQojIyMgTG9hZCBIZWFydCBBdHRhY2sgRGF0YQ0KDQpUaGlzIGhlYXJ0IGF0dGFjayBkYXRhIHdhcyBkb3dubG9hZGVkIGZyb20gTW9waGltOg0KDQpgYGB7ciByZWFkLU1vcGhpbXMtc3RhdHN9DQpIZWFydF9BdHRhY2tfTU88LSByZWFkX2NzdihoZXJlKCJkYXRhIiwgInJhdyIsICJIZWFydF9BdHRhY2tfUmF3X01PY291bnR5LmNzdiIpKQ0KYGBgDQoNCiMjIyBMb2FkIENvdW50eSBIZWFsdGggUmFua2luZyBEYXRhDQoNCmBgYHtyIHJlYWQtY291bnR5LXJhbmtpbmctY3N2fQ0KY291bnR5X3JhbmtpbmdzPC0gcmVhZF9jc3YoaGVyZSgiZGF0YSIsICJyYXciLCAiY291bnR5X3JhbmtpbmdzLmNzdiIpKQ0KYGBgDQoNCg0KIyMgQ2xlYW5pbmcgVmFyaWFibGVzDQoNCkkgd2lsbCBmaXJzdCBjbGVhbiB1cCBteSB0YWJsZXMsIHJlbW92aW5nIHVubmVjZXNzYXJ5IHZhcmlhYmxlczoNCg0KIyMjIENsZWFuIEhlYXJ0IEF0dGFjayBEYXRhDQoNCkZvciB0aGUgaGVhcnQgYXR0YWNrIGRhdGEsYE1hcHBlZCBWYWx1ZWAsIGBYNmAsIGFuZCBgUmFua2AgYXJlIHVubmVjZXNzYXJ5LCBmb3IgSSB3aWxsIHJhbmsgdGhlbSBteXNlbGYgbGF0ZXI6DQoNCmBgYHtyIGNsZWFuLWhlYXJ0LXZhcnN9DQpIZWFydF9BdHRhY2tfQ2xlYW48LSBzZWxlY3QoSGVhcnRfQXR0YWNrX01PLCAtIlg2IiwgLSJSYW5rIiwgLSJNYXBwZWQgVmFsdWUiICkNCmBgYA0KDQpOb3csIEkgd2FudCB0byByZW5hbWUgYEZJUFMgQ29kZWAgdG8gYEdFT0lEYCBhbmQgbWFrZSBpdCB0aGUgc2FtZSB2YWx1ZSBhcyB0aGUgaW5jb21lIGFuZCBwb3B1bGF0aW9uIGRhdGE6DQoNCmBgYHtyIHJlbmFtZS1oZWFydC1maXBzfQ0KSGVhcnRfQXR0YWNrX0NsZWFuIDwtIHJlbmFtZShIZWFydF9BdHRhY2tfQ2xlYW4sIEdFT0lEID0gIkZJUFMgQ29kZSIpDQpgYGANCg0KYGBge3IgdHJhbnNmb3JtLWhlYXJ0LWdlb2lkfQ0KSGVhcnRfQXR0YWNrX0NsZWFuIDwtICB0cmFuc2Zvcm0oSGVhcnRfQXR0YWNrX0NsZWFuLCBHRU9JRCA9IGFzLm51bWVyaWMoR0VPSUQpKQ0KYGBgDQoNCmBgYHtyIG11dGF0ZS1oZWFydC1nZW9pZH0NCkhlYXJ0X0F0dGFja19DbGVhbiA8LSBtdXRhdGUoSGVhcnRfQXR0YWNrX0NsZWFuLCBHRU9JRCA9IEdFT0lEICsyOTAwMCkNCmBgYA0KDQojIyMgQ2xlYW4gSW5jb21lIERhdGENCg0KRm9yIHRoZSBJbmNvbWUgZGF0YSwgYHZhcmlhYmxlYCBhbmQgYG1vZWAgYXJlIHVubmVjZXNzYXJ5IGFuZCBJIHdpbGwgcmVtb3ZlIHRoZW06DQoNCmBgYHtyIHNlbGVjdC1pbmNvbWUtdmFyc30NCk1PX0luY29tZV9DbGVhbjwtIHNlbGVjdChNT19JbmNvbWUsIC0idmFyaWFibGUiLCAtIm1vZSIpDQpgYGANCg0KIyMjIENsZWFuIFBvcHVsYXRpb24gRGF0YQ0KDQpGb3IgdGhlIHBvcHVsYXRpb24gZGF0YSwgYHZhcmlhYmxlYCBpcyB1bm5lY2Vzc2FyeSBhbmQgSSB3aWxsIHJlbW92ZSBpdDoNCg0KYGBge3Igc2VsZWN0LXBvcC12YXJzfQ0KTU9fcG9wdWxhdGlvbl9DbGVhbjwtIHNlbGVjdChNT19wb3B1bGF0aW9uLCAtInZhcmlhYmxlIikNCmBgYA0KDQojIyMgQ2xlYW4gQ291bnR5IFJhbmtpbmcgRGF0YQ0KDQpgYGB7ciBzZWxlY3QtY291bnR5LWhlYWx0aC12YXJzfQ0KQ291bnR5X1JhbmtpbmdzX0NsZWFuIDwtIHNlbGVjdChjb3VudHlfcmFua2luZ3MsICJYMSIsICJYMyIsICJBZHVsdCBzbW9raW5nIiwgIkFkdWx0IG9iZXNpdHkiLCAiRm9vZCBlbnZpcm9ubWVudCBpbmRleCIsICJQaHlzaWNhbCBpbmFjdGl2aXR5IiwgIkFjY2VzcyB0byBleGVyY2lzZSBvcHBvcnR1bml0aWVzIikNCmBgYA0KDQpgYGB7ciByZW5hbWUtY291bnR5LWhlYWx0aH0NCkNvdW50eV9SYW5raW5nc19DbGVhbiA8LSByZW5hbWUoQ291bnR5X1JhbmtpbmdzX0NsZWFuLCBHRU9JRCA9ICJYMSIpDQpDb3VudHlfUmFua2luZ3NfQ2xlYW4gPC0gcmVuYW1lKENvdW50eV9SYW5raW5nc19DbGVhbiwgQ291bnR5ID0gIlgzIikNCkNvdW50eV9SYW5raW5nc19DbGVhbiA8LSBDb3VudHlfUmFua2luZ3NfQ2xlYW5bLWMoMSwyKSxdDQpgYGANCg0KDQpOb3csIGFsbCBvZiBteSB0YWJsZXMgaGF2ZSB0aGUgc2FtZSAnR0VPSUQnLCBhbGwgb2YgdGhlIGNvdW50eSBsZXZlbCBkYXRhIGNvdWxkIG5vdyBiZSBqb2luZWQgdG9nZXRoZXIuDQoNCg==</div>
 
 
 
