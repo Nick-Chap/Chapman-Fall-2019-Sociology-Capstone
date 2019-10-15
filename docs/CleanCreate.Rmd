@@ -43,7 +43,6 @@ Now, I need to convert it to an sf object:
 moCounties <- st_as_sf(moCounties)
 ```
 
-
 ### Load Population Data
 
 `B99187_001` is the variable for: “Estimate!!Total”, I will use this to get a Population for each county in Missouri, as well as a Population Density:
@@ -59,6 +58,15 @@ MO_population <- get_acs(geography = "county", state = "MO", year = 2015, variab
 ```{r MO-County-Data}
 MO_Income <- get_acs(geography = "county", state = "MO", year = 2015, variable = "B19326_001", survey = "acs5")
 ```
+
+
+### Load Race Data
+
+```{r}
+MO_Race <- get_acs(geography = "county", state = "MO", year = 2015, variable = "B02001_003", survey = "acs5")
+```
+
+
 
 ### Load Heart Attack Data
 
@@ -117,6 +125,15 @@ For the population data, `variable` is unnecessary and I will remove it:
 MO_population_Clean<- select(MO_population, -"variable")
 ```
 
+### Clean Race Data
+
+I want to eliminate `variable` and `moe`:
+
+```{r}
+MO_Race_Clean<- select(MO_Race, -"variable", -"moe")
+```
+
+
 ### Clean County Ranking Data
 
 ```{r select-county-health-vars}
@@ -129,6 +146,32 @@ County_Rankings_Clean <- rename(County_Rankings_Clean, County = "X3")
 County_Rankings_Clean <- County_Rankings_Clean[-c(1,2),]
 ```
 
+### Clean MoCounties Data
+
+I only want the variables useful to join and project data (GEOID, Geography):
+
+```{r}
+moCounties <- select(moCounties, GEOID, geometry)
+```
+
+Now, I want to write this as a `.shp` object:
+
+```{r}
+st_write(moCounties, here("data", "clean", "moCounties.shp"))
+```
+
 
 Now, all of my tables have the same 'GEOID', all of the county level data could now be joined together.
+
+So, I want to save all of my tables as `.csv` files:
+
+```{r save-csv-files}
+write_csv(moCounties, here("data", "clean", "MO_county_geometry.csv"))
+write_csv(MO_Income_Clean, here("data", "clean", "MO_Income_Clean.csv"))
+write_csv(MO_population_Clean, here("data", "clean", "MO_population_Clean.csv"))
+write_csv(MO_Race_Clean, here("data", "clean", "MO_Race_Clean.csv"))
+write_csv(Heart_Attack_Clean, here("data", "clean", "Heart_Attack_Clean.csv"))
+write_csv(County_Rankings_Clean, here("data", "clean", "County_Rankings_Clean.csv"))
+```
+
 
