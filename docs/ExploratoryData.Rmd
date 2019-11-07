@@ -1,0 +1,26 @@
+---
+title: "Exploratory Data"
+author: "Nick chapman"
+date: '(`r format(Sys.time(), "%B %d, %Y")`)'
+output: 
+  github_document: default
+  html_notebook: default 
+---
+
+## Introduction
+This notebook contains the code to download demographic data from `tidycensus` for the State of Missouri, a `.shp` file of the counties of Missouri from `tigris`, read .csv files from Missouri's County Health Rankings, and Mophims and to clean the data from each of them.
+
+## Dependencies
+This notebook requires a few packages:
+
+```{r load-packages}
+# tidyverse packages
+library(tidycensus)
+library(tigris)
+library(dplyr)
+library(readr)
+library(here)
+library(naniar)
+library(janitor)
+library(sf)
+```
