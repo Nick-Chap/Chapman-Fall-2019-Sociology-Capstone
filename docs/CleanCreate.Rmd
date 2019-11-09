@@ -92,7 +92,10 @@ I will first clean up my tables, removing unnecessary variables:
 For the heart attack data,`Mapped Value`, `X6`, and `Rank` are unnecessary, for I will rank them myself later:
 
 ```{r clean-heart-vars}
-Heart_Attack_Clean<- select(Heart_Attack_MO, -"X6", -"Rank", -"Mapped Value" )
+Heart_Attack_Clean<- Heart_Attack_MO %>%
+  select("FIPS Code", "Count" ) %>%
+  rename(`Number_of_Heart_attacks` = "Count" ) %>%
+  mutate(Number_of_Heart_attacks = ifelse(Number_of_Heart_attacks == 'X', 0, Number_of_Heart_attacks))
 ```
 
 Now, I want to rename `FIPS Code` to `GEOID` and make it the same value as the income and population data:
@@ -114,7 +117,9 @@ Heart_Attack_Clean <- mutate(Heart_Attack_Clean, GEOID = GEOID +29000)
 For the Income data, `variable` and `moe` are unnecessary and I will remove them:
 
 ```{r select-income-vars}
-MO_Income_Clean<- select(MO_Income, -"variable", -"moe")
+MO_Income_Clean<- MO_Income %>%
+  select("GEOID", "estimate") %>%
+  rename(`Median_Income` = "estimate")
 ```
 
 ### Clean Population Data
@@ -122,7 +127,9 @@ MO_Income_Clean<- select(MO_Income, -"variable", -"moe")
 For the population data, `variable` is unnecessary and I will remove it:
 
 ```{r select-pop-vars}
-MO_population_Clean<- select(MO_population, -"variable")
+MO_population_Clean<- MO_population %>%
+                         select("GEOID", "estimate") %>%
+  rename(`Population_Estimate` = "estimate")
 ```
 
 ### Clean Race Data
@@ -130,19 +137,20 @@ MO_population_Clean<- select(MO_population, -"variable")
 I want to eliminate `variable` and `moe`:
 
 ```{r}
-MO_Race_Clean<- select(MO_Race, -"variable", -"moe")
+MO_Race_Clean<- MO_Race %>%
+  select("GEOID", "estimate") %>%
+  rename(`Number_Black` = "estimate")
 ```
 
 
 ### Clean County Ranking Data
 
 ```{r select-county-health-vars}
-County_Rankings_Clean <- select(county_rankings, "X1", "X3", "Adult smoking", "Adult obesity", "Food environment index", "Physical inactivity", "Access to exercise opportunities")
+County_Rankings_Clean <- select(county_rankings, "X1",  "Adult smoking", "Adult obesity", "Food environment index", "Physical inactivity", "Access to exercise opportunities")
 ```
 
 ```{r rename-county-health}
 County_Rankings_Clean <- rename(County_Rankings_Clean, GEOID = "X1")
-County_Rankings_Clean <- rename(County_Rankings_Clean, County = "X3")
 County_Rankings_Clean <- County_Rankings_Clean[-c(1,2),]
 ```
 

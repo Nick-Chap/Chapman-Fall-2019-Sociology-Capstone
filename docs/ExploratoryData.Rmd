@@ -8,7 +8,7 @@ output:
 ---
 
 ## Introduction
-This notebook contains the code to download demographic data from `tidycensus` for the State of Missouri, a `.shp` file of the counties of Missouri from `tigris`, read .csv files from Missouri's County Health Rankings, and Mophims and to clean the data from each of them.
+This notebook contains the code to explore the data created in the CleanCreate Notebook.
 
 ## Dependencies
 This notebook requires a few packages:
@@ -23,4 +23,74 @@ library(here)
 library(naniar)
 library(janitor)
 library(sf)
+library(Hmisc)
+library(ggplot2)
 ```
+
+## Load Data
+
+This Notebook requires data that will be called from the data/clean/ folder:
+
+```{r call-data}
+county_rankings<- read_csv(here("data", "clean", "County_Rankings_Clean.csv"))
+income_data<- read_csv(here("data", "clean", "MO_Income_Clean.csv"))
+population_data<- read.csv(here("data", "clean", "MO_population_Clean.csv"))
+heart_attack_data<- read.csv(here("data", "clean", "Heart_Attack_Clean.csv"))
+MO_counties<- read.csv(here("data", "clean", "MO_county_geometry.csv"))
+Black_pop<- read.csv(here("data", "clean", "MO_Race_Clean.csv"))
+```
+
+```{r load-corrTable-function}
+##load(here("source", "corrTable.R"))
+```
+
+
+```{r join heart-population-date}
+heart_attack_density<- left_join(heart_attack_data, population_data, by = "GEOID")
+```
+
+```{r generate-heart-attack-density}
+heart_attack_density %>%
+  mutate('Heart_Attack_Density' = ((Number_of_Heart_attacks/Population_Estimate) * 10000)) %>%
+  select(-"Number_of_Heart_attacks")-> heart_attack_density
+```
+
+
+
+```{r join-all-tables}
+income_rankings<- left_join(county_rankings, income_data, by = "GEOID")
+heart_income_rankings <- left_join(income_rankings, heart_attack_data, by = "GEOID")
+black_percent <- left_join(population_data, Black_pop, by= "GEOID")
+
+```
+
+```{r create-black-pop-percent}
+black_pop_percent<- black_percent %>%
+  mutate('Percent_Black' = (Number_Black/Population_Estimate)) %>%
+  select(-"Population_Estimate")
+```
+
+```{r join-race-data}
+heart_income_Black_rankings <- left_join(heart_income_rankings, black_pop_percent,by = "GEOID")
+```
+
+```{r join-all-data}
+heart_attack_final<- left_join(heart_income_Black_rankings, heart_attack_density, by = "GEOID")
+```
+
+
+```{r Corr-Table}
+correlation_table <- corrTable(heart_attack_final, coef= "pearson", listwise = TRUE, round = 3, pStar = T, `Adult smoking`, `Adult obesity`, `Food environment index`, `Physical inactivity`,`Access to exercise opportunities`, `Median_Income`, `Percent_Black`, `Heart_Attack_Density`)
+```
+
+```{r GGplot-violin-heart-attack-density-income}
+ggplot(data = heart_attack_final) +
+  geom_violin (mapping = aes(x= Heart_Attack_Density, y=Median_Income))
+```
+
+```{r}
+ggplot(data = heart_attack_final) +
+  geom_smooth(mapping = aes(x= Heart_Attack_Density, y = `Adult smoking`))
+```
+
+

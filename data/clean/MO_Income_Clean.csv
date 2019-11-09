@@ -1,116 +1,116 @@
-GEOID,NAME,estimate
-29001,"Adair County, Missouri",16709
-29003,"Andrew County, Missouri",27083
-29005,"Atchison County, Missouri",23876
-29007,"Audrain County, Missouri",21649
-29009,"Barry County, Missouri",21458
-29011,"Barton County, Missouri",20487
-29013,"Bates County, Missouri",21874
-29015,"Benton County, Missouri",18219
-29017,"Bollinger County, Missouri",21343
-29019,"Boone County, Missouri",25094
-29021,"Buchanan County, Missouri",23164
-29023,"Butler County, Missouri",19521
-29025,"Caldwell County, Missouri",25641
-29027,"Callaway County, Missouri",25042
-29029,"Camden County, Missouri",21354
-29031,"Cape Girardeau County, Missouri",23073
-29033,"Carroll County, Missouri",20698
-29035,"Carter County, Missouri",17484
-29037,"Cass County, Missouri",30478
-29039,"Cedar County, Missouri",16845
-29041,"Chariton County, Missouri",21179
-29043,"Christian County, Missouri",26365
-29045,"Clark County, Missouri",24994
-29047,"Clay County, Missouri",31184
-29049,"Clinton County, Missouri",27119
-29051,"Cole County, Missouri",30736
-29053,"Cooper County, Missouri",24707
-29055,"Crawford County, Missouri",18954
-29057,"Dade County, Missouri",19888
-29059,"Dallas County, Missouri",18990
-29061,"Daviess County, Missouri",22617
-29063,"DeKalb County, Missouri",23053
-29065,"Dent County, Missouri",18655
-29067,"Douglas County, Missouri",16448
-29069,"Dunklin County, Missouri",17847
-29071,"Franklin County, Missouri",25022
-29073,"Gasconade County, Missouri",21799
-29075,"Gentry County, Missouri",21782
-29077,"Greene County, Missouri",22664
-29079,"Grundy County, Missouri",19080
-29081,"Harrison County, Missouri",21204
-29083,"Henry County, Missouri",22947
-29085,"Hickory County, Missouri",17436
-29087,"Holt County, Missouri",23655
-29089,"Howard County, Missouri",23777
-29091,"Howell County, Missouri",18330
-29093,"Iron County, Missouri",18560
-29095,"Jackson County, Missouri",27066
-29097,"Jasper County, Missouri",22802
-29099,"Jefferson County, Missouri",27700
-29101,"Johnson County, Missouri",22434
-29103,"Knox County, Missouri",20870
-29105,"Laclede County, Missouri",20615
-29107,"Lafayette County, Missouri",27115
-29109,"Lawrence County, Missouri",21438
-29111,"Lewis County, Missouri",21154
-29113,"Lincoln County, Missouri",26356
-29115,"Linn County, Missouri",21466
-29117,"Livingston County, Missouri",24150
-29119,"McDonald County, Missouri",22028
-29121,"Macon County, Missouri",21323
-29123,"Madison County, Missouri",17877
-29125,"Maries County, Missouri",21870
-29127,"Marion County, Missouri",20761
-29129,"Mercer County, Missouri",22380
-29131,"Miller County, Missouri",21154
-29133,"Mississippi County, Missouri",15103
-29135,"Moniteau County, Missouri",24964
-29137,"Monroe County, Missouri",23358
-29139,"Montgomery County, Missouri",21511
-29141,"Morgan County, Missouri",19101
-29143,"New Madrid County, Missouri",20206
-29145,"Newton County, Missouri",22097
-29147,"Nodaway County, Missouri",16298
-29149,"Oregon County, Missouri",17371
-29151,"Osage County, Missouri",27955
-29153,"Ozark County, Missouri",18124
-29155,"Pemiscot County, Missouri",17603
-29157,"Perry County, Missouri",26864
-29159,"Pettis County, Missouri",21580
-29161,"Phelps County, Missouri",21498
-29163,"Pike County, Missouri",20669
-29165,"Platte County, Missouri",36353
-29167,"Polk County, Missouri",20531
-29169,"Pulaski County, Missouri",20189
-29171,"Putnam County, Missouri",20527
-29173,"Ralls County, Missouri",24316
-29175,"Randolph County, Missouri",19839
-29177,"Ray County, Missouri",25562
-29179,"Reynolds County, Missouri",18904
-29181,"Ripley County, Missouri",16852
-29183,"St. Charles County, Missouri",34801
-29185,"St. Clair County, Missouri",17295
-29186,"Ste. Genevieve County, Missouri",25324
-29187,"St. Francois County, Missouri",19696
-29189,"St. Louis County, Missouri",30885
-29195,"Saline County, Missouri",21920
-29197,"Schuyler County, Missouri",18918
-29199,"Scotland County, Missouri",21552
-29201,"Scott County, Missouri",20831
-29203,"Shannon County, Missouri",18486
-29205,"Shelby County, Missouri",21654
-29207,"Stoddard County, Missouri",21252
-29209,"Stone County, Missouri",21017
-29211,"Sullivan County, Missouri",21977
-29213,"Taney County, Missouri",19496
-29215,"Texas County, Missouri",18091
-29217,"Vernon County, Missouri",20732
-29219,"Warren County, Missouri",26016
-29221,"Washington County, Missouri",17532
-29223,"Wayne County, Missouri",17793
-29225,"Webster County, Missouri",22180
-29227,"Worth County, Missouri",23507
-29229,"Wright County, Missouri",17219
-29510,"St. Louis city, Missouri",22720
+GEOID,Median_Income
+29001,16709
+29003,27083
+29005,23876
+29007,21649
+29009,21458
+29011,20487
+29013,21874
+29015,18219
+29017,21343
+29019,25094
+29021,23164
+29023,19521
+29025,25641
+29027,25042
+29029,21354
+29031,23073
+29033,20698
+29035,17484
+29037,30478
+29039,16845
+29041,21179
+29043,26365
+29045,24994
+29047,31184
+29049,27119
+29051,30736
+29053,24707
+29055,18954
+29057,19888
+29059,18990
+29061,22617
+29063,23053
+29065,18655
+29067,16448
+29069,17847
+29071,25022
+29073,21799
+29075,21782
+29077,22664
+29079,19080
+29081,21204
+29083,22947
+29085,17436
+29087,23655
+29089,23777
+29091,18330
+29093,18560
+29095,27066
+29097,22802
+29099,27700
+29101,22434
+29103,20870
+29105,20615
+29107,27115
+29109,21438
+29111,21154
+29113,26356
+29115,21466
+29117,24150
+29119,22028
+29121,21323
+29123,17877
+29125,21870
+29127,20761
+29129,22380
+29131,21154
+29133,15103
+29135,24964
+29137,23358
+29139,21511
+29141,19101
+29143,20206
+29145,22097
+29147,16298
+29149,17371
+29151,27955
+29153,18124
+29155,17603
+29157,26864
+29159,21580
+29161,21498
+29163,20669
+29165,36353
+29167,20531
+29169,20189
+29171,20527
+29173,24316
+29175,19839
+29177,25562
+29179,18904
+29181,16852
+29183,34801
+29185,17295
+29186,25324
+29187,19696
+29189,30885
+29195,21920
+29197,18918
+29199,21552
+29201,20831
+29203,18486
+29205,21654
+29207,21252
+29209,21017
+29211,21977
+29213,19496
+29215,18091
+29217,20732
+29219,26016
+29221,17532
+29223,17793
+29225,22180
+29227,23507
+29229,17219
+29510,22720
