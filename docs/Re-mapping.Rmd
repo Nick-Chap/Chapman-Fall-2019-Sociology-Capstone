@@ -19,6 +19,7 @@ library(tidyr)
 library(here)
 library(readr)
 library(tigris)
+library(tidycensus)
 library(ggplot2)
 library(sf)
 library(RColorBrewer)
@@ -121,9 +122,10 @@ Finally, I want to map each of the years using GGplot and save their results:
 ```{r 2007 CHD_deaths_ggplot}
 ggplot() +
   geom_sf(data = CHD_per_state_2007, mapping = aes(fill = `Number of CHD per 100,000`))+
-  scale_fill_viridis_c(option = "cividis", name = "Number of CHD deaths per 100,000 individuals", direction = -1) +
+  scale_fill_viridis_c(option = "cividis", name = "Per Capita \nCHD Deaths", limits = c(50, 200), direction = -1) +
   labs(
-    title = "2007 CHD deaths by state",
+    title = "2007 CHD Deaths by State",
+    subtitle = "Rate per 100,000 individuals",
     caption = "Data from the CDC & HP2020"
   ) +
   theme_minimal() -> GGplot_2007_CHD
@@ -131,23 +133,73 @@ GGplot_2007_CHD
 ```
 
 ```{r save_ggplot_map1}
-ggsave(here("results", "maps", "GGplot_2007_CHD_Deaths.pdf"), GGplot_2007_CHD, dpi = 500)
+ggsave(here("results", "maps", "GGplot_2007_CHD_Deaths.png"), GGplot_2007_CHD, dpi = 500)
 ```
 
 
 ```{r 2017 CHD_deaths_ggplot}
 ggplot() +
   geom_sf(data = CHD_per_state_2017, mapping = aes(fill = `Number of CHD per 100,000`))+
-  scale_fill_viridis_c(option = "cividis", name = "Number of CHD deaths per 100,000 individuals", direction = -1) +
+  scale_fill_viridis_c(option = "cividis", name = "Per Capita \nCHD Deaths",limits = c(50, 200), direction = -1) +
   labs(
-    title = "2017 CHD deaths by state",
-    caption = "Data from the CDC & HP2020"
+    title = "2017 CHD Deaths by State",
+    subtitle = "Rate per 100,000 individuals",
+    caption = "Data fron the CDC & HP2020"
   ) +
   theme_minimal() -> GGplot_2017_CHD
 GGplot_2017_CHD
 ``` 
 
 ```{r save_ggplot_map2}
-ggsave(here("results", "maps", "GGplot_2017_CHD_Deaths.pdf"), GGplot_2017_CHD, dpi = 500)
+ggsave(here("results", "maps", "GGplot_2017_CHD_Deaths.png"), GGplot_2017_CHD, dpi = 500)
 ```
 
+### Mapping National Income Data
+
+Download and clean national income data:
+```{r}
+national_income <- get_acs(geography = "state", year = 2015, variable = "B19326_001", survey = "acs5")
+national_income <- national_income %>% 
+  select("GEOID", "NAME", "estimate") %>%
+  rename("Income" = "estimate") %>%
+  filter(!GEOID %in% c("11","72"))
+```
+
+Download and clean states shapefiles:
+
+I will load the data for the counties of Missouri, through `tigris`:
+```{r}
+fips_codes <- select(fips_codes, state_code, state_name) %>%
+  filter(!duplicated(state_name))
+```
+
+```{r}
+state_laea <- left_join(state_laea, fips_codes, by =c('GEOID' = 'state_code')) %>%
+  filter(!GEOID %in% c("11")) %>%
+  rename(state = "state_name")
+```
+
+Now, I want to join the shapefile data with the income data:
+
+```{r}
+income_national <- left_join(state_laea, national_income, by = "GEOID")
+```
+
+Now, I want to create a map to display these data:
+
+```{r}
+ggplot() +
+  geom_sf(data = income_national, mapping = aes(fill = `Income`))+
+  scale_fill_viridis_c(option = "cividis", name = "Median Income \n",limits = c(20000,40000), direction = -1) +
+  labs(
+    title = "2017 Income by State",
+    subtitle = "Inflation-adjusted Dollars",
+    caption = "Data from the US Census through the ACS"
+  ) +
+  theme_minimal() -> GGplot_2017_income
+GGplot_2017_income
+```
+
+```{r save_ggplot_map3}
+ggsave(here("results", "maps", "GGplot_2017_Income.png"), GGplot_2017_income, dpi = 500)
+```

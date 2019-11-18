@@ -1,7 +1,7 @@
 Re-mapping Cardiac Outcome Data
 ================
 Nick chapman
-(November 07, 2019)
+(November 12, 2019)
 
 # Introduction
 
@@ -50,6 +50,7 @@ library(tigris)
     ##     plot
 
 ``` r
+library(tidycensus)
 library(ggplot2)
 library(sf)
 ```
@@ -863,9 +864,10 @@ results:
 ``` r
 ggplot() +
   geom_sf(data = CHD_per_state_2007, mapping = aes(fill = `Number of CHD per 100,000`))+
-  scale_fill_viridis_c(option = "cividis", name = "Number of CHD deaths per 100,000 individuals", direction = -1) +
+  scale_fill_viridis_c(option = "cividis", name = "Per Capita \nCHD Deaths", limits = c(50, 200), direction = -1) +
   labs(
-    title = "2007 CHD deaths by state",
+    title = "2007 CHD Deaths by State",
+    subtitle = "Rate per 10,000 individuals",
     caption = "Data from the CDC & HP2020"
   ) +
   theme_minimal() -> GGplot_2007_CHD
@@ -875,7 +877,7 @@ GGplot_2007_CHD
 ![](Re-mapping_files/figure-gfm/2007%20CHD_deaths_ggplot-1.png)<!-- -->
 
 ``` r
-ggsave(here("results", "maps", "GGplot_2007_CHD_Deaths.pdf"), GGplot_2007_CHD, dpi = 500)
+ggsave(here("results", "maps", "GGplot_2007_CHD_Deaths.png"), GGplot_2007_CHD, dpi = 500)
 ```
 
     ## Saving 7 x 5 in image
@@ -883,10 +885,11 @@ ggsave(here("results", "maps", "GGplot_2007_CHD_Deaths.pdf"), GGplot_2007_CHD, d
 ``` r
 ggplot() +
   geom_sf(data = CHD_per_state_2017, mapping = aes(fill = `Number of CHD per 100,000`))+
-  scale_fill_viridis_c(option = "cividis", name = "Number of CHD deaths per 100,000 individuals", direction = -1) +
+  scale_fill_viridis_c(option = "cividis", name = "Per Capita \nCHD Deaths",limits = c(50, 200), direction = -1) +
   labs(
-    title = "2017 CHD deaths by state",
-    caption = "Data from the CDC & HP2020"
+    title = "2017 CHD Deaths by State",
+    subtitle = "Rate per 10,000 individuals",
+    caption = "Data fron the CDC & HP2020"
   ) +
   theme_minimal() -> GGplot_2017_CHD
 GGplot_2017_CHD
@@ -895,7 +898,63 @@ GGplot_2017_CHD
 ![](Re-mapping_files/figure-gfm/2017%20CHD_deaths_ggplot-1.png)<!-- -->
 
 ``` r
-ggsave(here("results", "maps", "GGplot_2017_CHD_Deaths.pdf"), GGplot_2017_CHD, dpi = 500)
+ggsave(here("results", "maps", "GGplot_2017_CHD_Deaths.png"), GGplot_2017_CHD, dpi = 500)
 ```
 
     ## Saving 7 x 5 in image
+
+### Mapping National Income Data
+
+Download and clean national income
+data:
+
+``` r
+national_income <- get_acs(geography = "state", year = 2015, variable = "B19326_001", survey = "acs5")
+```
+
+    ## Getting data from the 2011-2015 5-year ACS
+
+``` r
+national_income <- national_income %>% 
+  select("GEOID", "NAME", "estimate") %>%
+  rename("Income" = "estimate") %>%
+  filter(!GEOID %in% c("11","72"))
+```
+
+Download and clean states shapefiles:
+
+I will load the data for the counties of Missouri, through `tigris`:
+
+``` r
+fips_codes <- select(fips_codes, state_code, state_name) %>%
+  filter(!duplicated(state_name))
+```
+
+``` r
+state_laea <- left_join(state_laea, fips_codes, by =c('GEOID' = 'state_code')) %>%
+  filter(!GEOID %in% c("11")) %>%
+  rename(state = "state_name")
+```
+
+Now, I want to join the shapefile data with the income data:
+
+``` r
+income_national <- left_join(state_laea, national_income, by = "GEOID")
+```
+
+Now, I want to create a map to display these data:
+
+``` r
+ggplot() +
+  geom_sf(data = income_national, mapping = aes(fill = `Income`))+
+  scale_fill_viridis_c(option = "cividis", name = "Median Income \n",limits = c(20000,40000), direction = -1) +
+  labs(
+    title = "2017 Income by State",
+    subtitle = "Inflation-adjusted Dollars",
+    caption = "Data from the US Census through the ACS"
+  ) +
+  theme_minimal() -> GGplot_2017_income
+GGplot_2017_income
+```
+
+![](Re-mapping_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
