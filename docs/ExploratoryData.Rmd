@@ -38,6 +38,7 @@ population_data<- read.csv(here("data", "clean", "MO_population_Clean.csv"))
 heart_attack_data<- read.csv(here("data", "clean", "Heart_Attack_Clean.csv"))
 MO_counties<- read.csv(here("data", "clean", "MO_county_geometry.csv"))
 Black_pop<- read.csv(here("data", "clean", "MO_Race_Clean.csv"))
+MO_shapes <- read.csv(here("data", "clean", "MO_county_geometry.csv"))
 ```
 
 ```{r load-corrTable-function}
@@ -56,26 +57,20 @@ heart_attack_density %>%
 ```
 
 
-
-```{r join-all-tables}
-income_rankings<- left_join(county_rankings, income_data, by = "GEOID")
-heart_income_rankings <- left_join(income_rankings, heart_attack_data, by = "GEOID")
+```{r create-black-pop-percent}
 black_percent <- left_join(population_data, Black_pop, by= "GEOID")
 
-```
-
-```{r create-black-pop-percent}
 black_pop_percent<- black_percent %>%
   mutate('Percent_Black' = (Number_Black/Population_Estimate)) %>%
   select(-"Population_Estimate")
 ```
 
-```{r join-race-data}
+```{r join-all-tables}
+income_rankings<- left_join(county_rankings, income_data, by = "GEOID")
+heart_income_rankings <- left_join(income_rankings, heart_attack_data, by = "GEOID")
 heart_income_Black_rankings <- left_join(heart_income_rankings, black_pop_percent,by = "GEOID")
-```
-
-```{r join-all-data}
 heart_attack_final<- left_join(heart_income_Black_rankings, heart_attack_density, by = "GEOID")
+variables_counties <- left_join(MO_shapes,heart_attack_final, by= "GEOID")
 ```
 
 
@@ -98,4 +93,17 @@ ggplot(data = heart_attack_final) +
   geom_smooth (mapping = aes(x= `Food environment index`, y = Heart_Attack_Density))
 ```
 
+
+```{r}
+ggplot() +
+  geom_sf(data = variables_counties, mapping = aes(fill = `Median_Income`))+
+  scale_fill_viridis_c(option = "cividis", name = "Median Income \n",limits = c(20000,40000), direction = -1) +
+  labs(
+    title = "2017 Income by County",
+    subtitle = "Inflation-adjusted Dollars",
+    caption = "Data from the US Census through the ACS"
+  ) +
+  theme_minimal() -> GGplot_MO_2017_income
+GGplot_MO_2017_income
+```
 

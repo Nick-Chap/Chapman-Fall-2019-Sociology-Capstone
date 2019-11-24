@@ -1746,7 +1746,7 @@ summary {
 
 <h1 class="title toc-ignore">Exploratory Data</h1>
 <h4 class="author">Nick chapman</h4>
-<h4 class="date">(November 09, 2019)</h4>
+<h4 class="date">(November 24, 2019)</h4>
 
 </div>
 
@@ -1806,11 +1806,12 @@ cols(
   Median_Income = [32mcol_double()[39m
 )</code></pre>
 <!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucG9wdWxhdGlvbl9kYXRhPC0gcmVhZC5jc3YoaGVyZShcImRhdGFcIiwgXCJjbGVhblwiLCBcIk1PX3BvcHVsYXRpb25fQ2xlYW4uY3N2XCIpKVxuaGVhcnRfYXR0YWNrX2RhdGE8LSByZWFkLmNzdihoZXJlKFwiZGF0YVwiLCBcImNsZWFuXCIsIFwiSGVhcnRfQXR0YWNrX0NsZWFuLmNzdlwiKSlcbk1PX2NvdW50aWVzPC0gcmVhZC5jc3YoaGVyZShcImRhdGFcIiwgXCJjbGVhblwiLCBcIk1PX2NvdW50eV9nZW9tZXRyeS5jc3ZcIikpXG5CbGFja19wb3A8LSByZWFkLmNzdihoZXJlKFwiZGF0YVwiLCBcImNsZWFuXCIsIFwiTU9fUmFjZV9DbGVhbi5jc3ZcIikpXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucG9wdWxhdGlvbl9kYXRhPC0gcmVhZC5jc3YoaGVyZShcImRhdGFcIiwgXCJjbGVhblwiLCBcIk1PX3BvcHVsYXRpb25fQ2xlYW4uY3N2XCIpKVxuaGVhcnRfYXR0YWNrX2RhdGE8LSByZWFkLmNzdihoZXJlKFwiZGF0YVwiLCBcImNsZWFuXCIsIFwiSGVhcnRfQXR0YWNrX0NsZWFuLmNzdlwiKSlcbk1PX2NvdW50aWVzPC0gcmVhZC5jc3YoaGVyZShcImRhdGFcIiwgXCJjbGVhblwiLCBcIk1PX2NvdW50eV9nZW9tZXRyeS5jc3ZcIikpXG5CbGFja19wb3A8LSByZWFkLmNzdihoZXJlKFwiZGF0YVwiLCBcImNsZWFuXCIsIFwiTU9fUmFjZV9DbGVhbi5jc3ZcIikpXG5NT19zaGFwZXMgPC0gcmVhZC5jc3YoaGVyZShcImRhdGFcIiwgXCJjbGVhblwiLCBcIk1PX2NvdW50eV9nZW9tZXRyeS5jc3ZcIikpXG5gYGAifQ== -->
 <pre class="r"><code>population_data&lt;- read.csv(here(&quot;data&quot;, &quot;clean&quot;, &quot;MO_population_Clean.csv&quot;))
 heart_attack_data&lt;- read.csv(here(&quot;data&quot;, &quot;clean&quot;, &quot;Heart_Attack_Clean.csv&quot;))
 MO_counties&lt;- read.csv(here(&quot;data&quot;, &quot;clean&quot;, &quot;MO_county_geometry.csv&quot;))
-Black_pop&lt;- read.csv(here(&quot;data&quot;, &quot;clean&quot;, &quot;MO_Race_Clean.csv&quot;))</code></pre>
+Black_pop&lt;- read.csv(here(&quot;data&quot;, &quot;clean&quot;, &quot;MO_Race_Clean.csv&quot;))
+MO_shapes &lt;- read.csv(here(&quot;data&quot;, &quot;clean&quot;, &quot;MO_county_geometry.csv&quot;))</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1839,18 +1840,10 @@ Black_pop&lt;- read.csv(here(&quot;data&quot;, &quot;clean&quot;, &quot;MO_Race_
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5jb21lX3JhbmtpbmdzPC0gbGVmdF9qb2luKGNvdW50eV9yYW5raW5ncywgaW5jb21lX2RhdGEsIGJ5ID0gXCJHRU9JRFwiKVxuaGVhcnRfaW5jb21lX3JhbmtpbmdzIDwtIGxlZnRfam9pbihpbmNvbWVfcmFua2luZ3MsIGhlYXJ0X2F0dGFja19kYXRhLCBieSA9IFwiR0VPSURcIilcbmJsYWNrX3BlcmNlbnQgPC0gbGVmdF9qb2luKHBvcHVsYXRpb25fZGF0YSwgQmxhY2tfcG9wLCBieT0gXCJHRU9JRFwiKVxuXG5gYGAifQ== -->
-<pre class="r"><code>income_rankings&lt;- left_join(county_rankings, income_data, by = &quot;GEOID&quot;)
-heart_income_rankings &lt;- left_join(income_rankings, heart_attack_data, by = &quot;GEOID&quot;)
-black_percent &lt;- left_join(population_data, Black_pop, by= &quot;GEOID&quot;)
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmxhY2tfcG9wX3BlcmNlbnQ8LSBibGFja19wZXJjZW50ICU+JVxuICBtdXRhdGUoJ1BlcmNlbnRfQmxhY2snID0gKE51bWJlcl9CbGFjay9Qb3B1bGF0aW9uX0VzdGltYXRlKSkgJT4lXG4gIHNlbGVjdCgtXCJQb3B1bGF0aW9uX0VzdGltYXRlXCIpXG5gYGAifQ== -->
-<pre class="r"><code>black_pop_percent&lt;- black_percent %&gt;%
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmxhY2tfcGVyY2VudCA8LSBsZWZ0X2pvaW4ocG9wdWxhdGlvbl9kYXRhLCBCbGFja19wb3AsIGJ5PSBcIkdFT0lEXCIpXG5cbmJsYWNrX3BvcF9wZXJjZW50PC0gYmxhY2tfcGVyY2VudCAlPiVcbiAgbXV0YXRlKCdQZXJjZW50X0JsYWNrJyA9IChOdW1iZXJfQmxhY2svUG9wdWxhdGlvbl9Fc3RpbWF0ZSkpICU+JVxuICBzZWxlY3QoLVwiUG9wdWxhdGlvbl9Fc3RpbWF0ZVwiKVxuYGBgIn0= -->
+<pre class="r"><code>black_percent &lt;- left_join(population_data, Black_pop, by= &quot;GEOID&quot;)
+
+black_pop_percent&lt;- black_percent %&gt;%
   mutate(&#39;Percent_Black&#39; = (Number_Black/Population_Estimate)) %&gt;%
   select(-&quot;Population_Estimate&quot;)</code></pre>
 <!-- rnb-source-end -->
@@ -1858,15 +1851,12 @@ black_percent &lt;- left_join(population_data, Black_pop, by= &quot;GEOID&quot;)
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGVhcnRfaW5jb21lX0JsYWNrX3JhbmtpbmdzIDwtIGxlZnRfam9pbihoZWFydF9pbmNvbWVfcmFua2luZ3MsIGJsYWNrX3BvcF9wZXJjZW50LGJ5ID0gXCJHRU9JRFwiKVxuYGBgIn0= -->
-<pre class="r"><code>heart_income_Black_rankings &lt;- left_join(heart_income_rankings, black_pop_percent,by = &quot;GEOID&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGVhcnRfYXR0YWNrX2ZpbmFsPC0gbGVmdF9qb2luKGhlYXJ0X2luY29tZV9CbGFja19yYW5raW5ncywgaGVhcnRfYXR0YWNrX2RlbnNpdHksIGJ5ID0gXCJHRU9JRFwiKVxuYGBgIn0= -->
-<pre class="r"><code>heart_attack_final&lt;- left_join(heart_income_Black_rankings, heart_attack_density, by = &quot;GEOID&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5jb21lX3JhbmtpbmdzPC0gbGVmdF9qb2luKGNvdW50eV9yYW5raW5ncywgaW5jb21lX2RhdGEsIGJ5ID0gXCJHRU9JRFwiKVxuaGVhcnRfaW5jb21lX3JhbmtpbmdzIDwtIGxlZnRfam9pbihpbmNvbWVfcmFua2luZ3MsIGhlYXJ0X2F0dGFja19kYXRhLCBieSA9IFwiR0VPSURcIilcbmhlYXJ0X2luY29tZV9CbGFja19yYW5raW5ncyA8LSBsZWZ0X2pvaW4oaGVhcnRfaW5jb21lX3JhbmtpbmdzLCBibGFja19wb3BfcGVyY2VudCxieSA9IFwiR0VPSURcIilcbmhlYXJ0X2F0dGFja19maW5hbDwtIGxlZnRfam9pbihoZWFydF9pbmNvbWVfQmxhY2tfcmFua2luZ3MsIGhlYXJ0X2F0dGFja19kZW5zaXR5LCBieSA9IFwiR0VPSURcIilcbnZhcmlhYmxlc19jb3VudGllcyA8LSBsZWZ0X2pvaW4oTU9fc2hhcGVzLGhlYXJ0X2F0dGFja19maW5hbCwgYnk9IFwiR0VPSURcIilcbmBgYCJ9 -->
+<pre class="r"><code>income_rankings&lt;- left_join(county_rankings, income_data, by = &quot;GEOID&quot;)
+heart_income_rankings &lt;- left_join(income_rankings, heart_attack_data, by = &quot;GEOID&quot;)
+heart_income_Black_rankings &lt;- left_join(heart_income_rankings, black_pop_percent,by = &quot;GEOID&quot;)
+heart_attack_final&lt;- left_join(heart_income_Black_rankings, heart_attack_density, by = &quot;GEOID&quot;)
+variables_counties &lt;- left_join(MO_shapes,heart_attack_final, by= &quot;GEOID&quot;)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1875,6 +1865,10 @@ black_percent &lt;- left_join(population_data, Black_pop, by= &quot;GEOID&quot;)
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29ycmVsYXRpb25fdGFibGUgPC0gY29yclRhYmxlKGhlYXJ0X2F0dGFja19maW5hbCwgY29lZj0gXCJwZWFyc29uXCIsIGxpc3R3aXNlID0gVFJVRSwgcm91bmQgPSAzLCBwU3RhciA9IFQsIGBBZHVsdCBzbW9raW5nYCwgYEFkdWx0IG9iZXNpdHlgLCBgRm9vZCBlbnZpcm9ubWVudCBpbmRleGAsIGBQaHlzaWNhbCBpbmFjdGl2aXR5YCxgQWNjZXNzIHRvIGV4ZXJjaXNlIG9wcG9ydHVuaXRpZXNgLCBgTWVkaWFuX0luY29tZWAsIGBQZXJjZW50X0JsYWNrYCwgYEhlYXJ0X0F0dGFja19EZW5zaXR5YClcbmBgYCJ9 -->
 <pre class="r"><code>correlation_table &lt;- corrTable(heart_attack_final, coef= &quot;pearson&quot;, listwise = TRUE, round = 3, pStar = T, `Adult smoking`, `Adult obesity`, `Food environment index`, `Physical inactivity`,`Access to exercise opportunities`, `Median_Income`, `Percent_Black`, `Heart_Attack_Density`)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gY29yclRhYmxlKGhlYXJ0X2F0dGFja19maW5hbCwgY29lZiA9IFwicGVhcnNvblwiLCBsaXN0d2lzZSA9IFRSVUUsICA6IFxuICBjb3VsZCBub3QgZmluZCBmdW5jdGlvbiBcImNvcnJUYWJsZVwiXG4ifQ== -->
+<pre><code>Error in corrTable(heart_attack_final, coef = &quot;pearson&quot;, listwise = TRUE,  : 
+  could not find function &quot;corrTable&quot;</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
@@ -1882,28 +1876,45 @@ black_percent &lt;- left_join(population_data, Black_pop, by= &quot;GEOID&quot;)
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud3JpdGVfY3N2KGNvcnJlbGF0aW9uX3RhYmxlLCBoZXJlKFwicmVzdWx0c1wiLCBcIkNvcnJlbGF0aW9uLlRhYmxlXCIsIFwiY29ycmVsYXRpb24udGFibGUuY3N2XCIpKVxuYGBgIn0= -->
 <pre class="r"><code>write_csv(correlation_table, here(&quot;results&quot;, &quot;Correlation.Table&quot;, &quot;correlation.table.csv&quot;))</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiY2Fubm90IG9wZW4gZmlsZSAnQzovVXNlcnMvbmlja2MvT25lRHJpdmUvRG9jdW1lbnRzL0dpdEh1Yi9DaGFwbWFuLUZhbGwtMjAxOS1Tb2Npb2xvZ3ktQ2Fwc3RvbmUvcmVzdWx0cy9Db3JyZWxhdGlvbi5UYWJsZS9jb3JyZWxhdGlvbi50YWJsZS5jc3YnOiBQZXJtaXNzaW9uIGRlbmllZEVycm9yIGluIG9wZW4uY29ubmVjdGlvbihwYXRoLCBcIndiXCIpIDogY2Fubm90IG9wZW4gdGhlIGNvbm5lY3Rpb25cbiJ9 -->
+<pre><code>cannot open file &#39;C:/Users/nickc/OneDrive/Documents/GitHub/Chapman-Fall-2019-Sociology-Capstone/results/Correlation.Table/correlation.table.csv&#39;: Permission deniedError in open.connection(path, &quot;wb&quot;) : cannot open the connection</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBoZWFydF9hdHRhY2tfZmluYWwpICtcbiAgZ2VvbV92aW9saW4gKG1hcHBpbmcgPSBhZXMoeD0gSGVhcnRfQXR0YWNrX0RlbnNpdHksIHk9TWVkaWFuX0luY29tZSkpXG5gYGAifQ== -->
-<pre class="r"><code>ggplot(data = heart_attack_final) +
-  geom_violin (mapping = aes(x= Heart_Attack_Density, y=Median_Income))</code></pre>
-<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBoZWFydF9hdHRhY2tfZmluYWwpICtcbiAgZ2VvbV9zbW9vdGggKG1hcHBpbmcgPSBhZXMoeD0gYEZvb2QgZW52aXJvbm1lbnQgaW5kZXhgLCB5ID0gSGVhcnRfQXR0YWNrX0RlbnNpdHkpKVxuYGBgIn0= -->
-<pre class="r"><code>ggplot(data = heart_attack_final) +
-  geom_smooth (mapping = aes(x= `Food environment index`, y = Heart_Attack_Density))</code></pre>
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KCkgK1xuICBnZW9tX3NmKGRhdGEgPSB2YXJpYWJsZXNfY291bnRpZXMsIG1hcHBpbmcgPSBhZXMoZmlsbCA9IGBNZWRpYW5fSW5jb21lYCkpK1xuICBzY2FsZV9maWxsX3ZpcmlkaXNfYyhvcHRpb24gPSBcImNpdmlkaXNcIiwgbmFtZSA9IFwiTWVkaWFuIEluY29tZSBcXG5cIixsaW1pdHMgPSBjKDIwMDAwLDQwMDAwKSwgZGlyZWN0aW9uID0gLTEpICtcbiAgbGFicyhcbiAgICB0aXRsZSA9IFwiMjAxNyBJbmNvbWUgYnkgQ291bnR5XCIsXG4gICAgc3VidGl0bGUgPSBcIkluZmxhdGlvbi1hZGp1c3RlZCBEb2xsYXJzXCIsXG4gICAgY2FwdGlvbiA9IFwiRGF0YSBmcm9tIHRoZSBVUyBDZW5zdXMgdGhyb3VnaCB0aGUgQUNTXCJcbiAgKSArXG4gIHRoZW1lX21pbmltYWwoKSAtPiBHR3Bsb3RfTU9fMjAxN19pbmNvbWVcbkdHcGxvdF9NT18yMDE3X2luY29tZVxuYGBgIn0= -->
+<pre class="r"><code>ggplot() +
+  geom_sf(data = variables_counties, mapping = aes(fill = `Median_Income`))+
+  scale_fill_viridis_c(option = &quot;cividis&quot;, name = &quot;Median Income \n&quot;,limits = c(20000,40000), direction = -1) +
+  labs(
+    title = &quot;2017 Income by County&quot;,
+    subtitle = &quot;Inflation-adjusted Dollars&quot;,
+    caption = &quot;Data from the US Census through the ACS&quot;
+  ) +
+  theme_minimal() -&gt; GGplot_MO_2017_income
+GGplot_MO_2017_income</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3I6IHN0YXRfc2YgcmVxdWlyZXMgdGhlIGZvbGxvd2luZyBtaXNzaW5nIGFlc3RoZXRpY3M6IGdlb21ldHJ5XG4ifQ== -->
+<pre><code>Error: stat_sf requires the following missing aesthetics: geometry</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-plot-begin eyJjb25kaXRpb25zIjpbXSwiaGVpZ2h0Ijo0MzIuNjMyOSwic2l6ZV9iZWhhdmlvciI6MCwid2lkdGgiOjcwMH0= -->
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAArwAAAGwCAMAAAB8TkaXAAAAA1BMVEX///+nxBvIAAAACXBIWXMAAA7DAAAOwwHHb6hkAAABPElEQVR4nO3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwafLAABhydcUAAAAABJRU5ErkJggg==" /></p>
+<!-- rnb-plot-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkV4cGxvcmF0b3J5IERhdGEiDQphdXRob3I6ICJOaWNrIGNoYXBtYW4iDQpkYXRlOiAnKGByIGZvcm1hdChTeXMudGltZSgpLCAiJUIgJWQsICVZIilgKScNCm91dHB1dDogDQogIGdpdGh1Yl9kb2N1bWVudDogZGVmYXVsdA0KICBodG1sX25vdGVib29rOiBkZWZhdWx0IA0KLS0tDQoNCiMjIEludHJvZHVjdGlvbg0KVGhpcyBub3RlYm9vayBjb250YWlucyB0aGUgY29kZSB0byBleHBsb3JlIHRoZSBkYXRhIGNyZWF0ZWQgaW4gdGhlIENsZWFuQ3JlYXRlIE5vdGVib29rLg0KDQojIyBEZXBlbmRlbmNpZXMNClRoaXMgbm90ZWJvb2sgcmVxdWlyZXMgYSBmZXcgcGFja2FnZXM6DQoNCmBgYHtyIGxvYWQtcGFja2FnZXN9DQojIHRpZHl2ZXJzZSBwYWNrYWdlcw0KbGlicmFyeSh0aWR5Y2Vuc3VzKQ0KbGlicmFyeSh0aWdyaXMpDQpsaWJyYXJ5KGRwbHlyKQ0KbGlicmFyeShyZWFkcikNCmxpYnJhcnkoaGVyZSkNCmxpYnJhcnkobmFuaWFyKQ0KbGlicmFyeShqYW5pdG9yKQ0KbGlicmFyeShzZikNCmxpYnJhcnkoSG1pc2MpDQpsaWJyYXJ5KGdncGxvdDIpDQpgYGANCg0KIyMgTG9hZCBEYXRhDQoNClRoaXMgTm90ZWJvb2sgcmVxdWlyZXMgZGF0YSB0aGF0IHdpbGwgYmUgY2FsbGVkIGZyb20gdGhlIGRhdGEvY2xlYW4vIGZvbGRlcjoNCg0KYGBge3IgY2FsbC1kYXRhfQ0KY291bnR5X3JhbmtpbmdzPC0gcmVhZF9jc3YoaGVyZSgiZGF0YSIsICJjbGVhbiIsICJDb3VudHlfUmFua2luZ3NfQ2xlYW4uY3N2IikpDQppbmNvbWVfZGF0YTwtIHJlYWRfY3N2KGhlcmUoImRhdGEiLCAiY2xlYW4iLCAiTU9fSW5jb21lX0NsZWFuLmNzdiIpKQ0KcG9wdWxhdGlvbl9kYXRhPC0gcmVhZC5jc3YoaGVyZSgiZGF0YSIsICJjbGVhbiIsICJNT19wb3B1bGF0aW9uX0NsZWFuLmNzdiIpKQ0KaGVhcnRfYXR0YWNrX2RhdGE8LSByZWFkLmNzdihoZXJlKCJkYXRhIiwgImNsZWFuIiwgIkhlYXJ0X0F0dGFja19DbGVhbi5jc3YiKSkNCk1PX2NvdW50aWVzPC0gcmVhZC5jc3YoaGVyZSgiZGF0YSIsICJjbGVhbiIsICJNT19jb3VudHlfZ2VvbWV0cnkuY3N2IikpDQpCbGFja19wb3A8LSByZWFkLmNzdihoZXJlKCJkYXRhIiwgImNsZWFuIiwgIk1PX1JhY2VfQ2xlYW4uY3N2IikpDQpgYGANCg0KYGBge3IgbG9hZC1jb3JyVGFibGUtZnVuY3Rpb259DQojI2xvYWQoaGVyZSgic291cmNlIiwgImNvcnJUYWJsZS5SIikpDQpgYGANCg0KDQpgYGB7ciBqb2luIGhlYXJ0LXBvcHVsYXRpb24tZGF0ZX0NCmhlYXJ0X2F0dGFja19kZW5zaXR5PC0gbGVmdF9qb2luKGhlYXJ0X2F0dGFja19kYXRhLCBwb3B1bGF0aW9uX2RhdGEsIGJ5ID0gIkdFT0lEIikNCmBgYA0KDQpgYGB7ciBnZW5lcmF0ZS1oZWFydC1hdHRhY2stZGVuc2l0eX0NCmhlYXJ0X2F0dGFja19kZW5zaXR5ICU+JQ0KICBtdXRhdGUoJ0hlYXJ0X0F0dGFja19EZW5zaXR5JyA9ICgoTnVtYmVyX29mX0hlYXJ0X2F0dGFja3MvUG9wdWxhdGlvbl9Fc3RpbWF0ZSkgKiAxMDAwMCkpICU+JQ0KICBzZWxlY3QoLSJOdW1iZXJfb2ZfSGVhcnRfYXR0YWNrcyIpLT4gaGVhcnRfYXR0YWNrX2RlbnNpdHkNCmBgYA0KDQoNCg0KYGBge3Igam9pbi1hbGwtdGFibGVzfQ0KaW5jb21lX3JhbmtpbmdzPC0gbGVmdF9qb2luKGNvdW50eV9yYW5raW5ncywgaW5jb21lX2RhdGEsIGJ5ID0gIkdFT0lEIikNCmhlYXJ0X2luY29tZV9yYW5raW5ncyA8LSBsZWZ0X2pvaW4oaW5jb21lX3JhbmtpbmdzLCBoZWFydF9hdHRhY2tfZGF0YSwgYnkgPSAiR0VPSUQiKQ0KYmxhY2tfcGVyY2VudCA8LSBsZWZ0X2pvaW4ocG9wdWxhdGlvbl9kYXRhLCBCbGFja19wb3AsIGJ5PSAiR0VPSUQiKQ0KDQpgYGANCg0KYGBge3IgY3JlYXRlLWJsYWNrLXBvcC1wZXJjZW50fQ0KYmxhY2tfcG9wX3BlcmNlbnQ8LSBibGFja19wZXJjZW50ICU+JQ0KICBtdXRhdGUoJ1BlcmNlbnRfQmxhY2snID0gKE51bWJlcl9CbGFjay9Qb3B1bGF0aW9uX0VzdGltYXRlKSkgJT4lDQogIHNlbGVjdCgtIlBvcHVsYXRpb25fRXN0aW1hdGUiKQ0KYGBgDQoNCmBgYHtyIGpvaW4tcmFjZS1kYXRhfQ0KaGVhcnRfaW5jb21lX0JsYWNrX3JhbmtpbmdzIDwtIGxlZnRfam9pbihoZWFydF9pbmNvbWVfcmFua2luZ3MsIGJsYWNrX3BvcF9wZXJjZW50LGJ5ID0gIkdFT0lEIikNCmBgYA0KDQpgYGB7ciBqb2luLWFsbC1kYXRhfQ0KaGVhcnRfYXR0YWNrX2ZpbmFsPC0gbGVmdF9qb2luKGhlYXJ0X2luY29tZV9CbGFja19yYW5raW5ncywgaGVhcnRfYXR0YWNrX2RlbnNpdHksIGJ5ID0gIkdFT0lEIikNCmBgYA0KDQoNCmBgYHtyIENvcnItVGFibGV9DQpjb3JyZWxhdGlvbl90YWJsZSA8LSBjb3JyVGFibGUoaGVhcnRfYXR0YWNrX2ZpbmFsLCBjb2VmPSAicGVhcnNvbiIsIGxpc3R3aXNlID0gVFJVRSwgcm91bmQgPSAzLCBwU3RhciA9IFQsIGBBZHVsdCBzbW9raW5nYCwgYEFkdWx0IG9iZXNpdHlgLCBgRm9vZCBlbnZpcm9ubWVudCBpbmRleGAsIGBQaHlzaWNhbCBpbmFjdGl2aXR5YCxgQWNjZXNzIHRvIGV4ZXJjaXNlIG9wcG9ydHVuaXRpZXNgLCBgTWVkaWFuX0luY29tZWAsIGBQZXJjZW50X0JsYWNrYCwgYEhlYXJ0X0F0dGFja19EZW5zaXR5YCkNCmBgYA0KDQpgYGB7cn0NCndyaXRlX2Nzdihjb3JyZWxhdGlvbl90YWJsZSwgaGVyZSgicmVzdWx0cyIsICJDb3JyZWxhdGlvbi5UYWJsZSIsICJjb3JyZWxhdGlvbi50YWJsZS5jc3YiKSkNCmBgYA0KDQoNCmBgYHtyIEdHcGxvdC12aW9saW4taGVhcnQtYXR0YWNrLWRlbnNpdHktaW5jb21lfQ0KZ2dwbG90KGRhdGEgPSBoZWFydF9hdHRhY2tfZmluYWwpICsNCiAgZ2VvbV92aW9saW4gKG1hcHBpbmcgPSBhZXMoeD0gSGVhcnRfQXR0YWNrX0RlbnNpdHksIHk9TWVkaWFuX0luY29tZSkpDQpgYGANCg0KYGBge3IgR0dwbG90LXNtb290aC1mb29kLWhlYXJ0LWF0dGFja30NCmdncGxvdChkYXRhID0gaGVhcnRfYXR0YWNrX2ZpbmFsKSArDQogIGdlb21fc21vb3RoIChtYXBwaW5nID0gYWVzKHg9IGBGb29kIGVudmlyb25tZW50IGluZGV4YCwgeSA9IEhlYXJ0X0F0dGFja19EZW5zaXR5KSkNCmBgYA0KDQoNCg==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkV4cGxvcmF0b3J5IERhdGEiDQphdXRob3I6ICJOaWNrIGNoYXBtYW4iDQpkYXRlOiAnKGByIGZvcm1hdChTeXMudGltZSgpLCAiJUIgJWQsICVZIilgKScNCm91dHB1dDogDQogIGdpdGh1Yl9kb2N1bWVudDogZGVmYXVsdA0KICBodG1sX25vdGVib29rOiBkZWZhdWx0IA0KLS0tDQoNCiMjIEludHJvZHVjdGlvbg0KVGhpcyBub3RlYm9vayBjb250YWlucyB0aGUgY29kZSB0byBleHBsb3JlIHRoZSBkYXRhIGNyZWF0ZWQgaW4gdGhlIENsZWFuQ3JlYXRlIE5vdGVib29rLg0KDQojIyBEZXBlbmRlbmNpZXMNClRoaXMgbm90ZWJvb2sgcmVxdWlyZXMgYSBmZXcgcGFja2FnZXM6DQoNCmBgYHtyIGxvYWQtcGFja2FnZXN9DQojIHRpZHl2ZXJzZSBwYWNrYWdlcw0KbGlicmFyeSh0aWR5Y2Vuc3VzKQ0KbGlicmFyeSh0aWdyaXMpDQpsaWJyYXJ5KGRwbHlyKQ0KbGlicmFyeShyZWFkcikNCmxpYnJhcnkoaGVyZSkNCmxpYnJhcnkobmFuaWFyKQ0KbGlicmFyeShqYW5pdG9yKQ0KbGlicmFyeShzZikNCmxpYnJhcnkoSG1pc2MpDQpsaWJyYXJ5KGdncGxvdDIpDQpgYGANCg0KIyMgTG9hZCBEYXRhDQoNClRoaXMgTm90ZWJvb2sgcmVxdWlyZXMgZGF0YSB0aGF0IHdpbGwgYmUgY2FsbGVkIGZyb20gdGhlIGRhdGEvY2xlYW4vIGZvbGRlcjoNCg0KYGBge3IgY2FsbC1kYXRhfQ0KY291bnR5X3JhbmtpbmdzPC0gcmVhZF9jc3YoaGVyZSgiZGF0YSIsICJjbGVhbiIsICJDb3VudHlfUmFua2luZ3NfQ2xlYW4uY3N2IikpDQppbmNvbWVfZGF0YTwtIHJlYWRfY3N2KGhlcmUoImRhdGEiLCAiY2xlYW4iLCAiTU9fSW5jb21lX0NsZWFuLmNzdiIpKQ0KcG9wdWxhdGlvbl9kYXRhPC0gcmVhZC5jc3YoaGVyZSgiZGF0YSIsICJjbGVhbiIsICJNT19wb3B1bGF0aW9uX0NsZWFuLmNzdiIpKQ0KaGVhcnRfYXR0YWNrX2RhdGE8LSByZWFkLmNzdihoZXJlKCJkYXRhIiwgImNsZWFuIiwgIkhlYXJ0X0F0dGFja19DbGVhbi5jc3YiKSkNCk1PX2NvdW50aWVzPC0gcmVhZC5jc3YoaGVyZSgiZGF0YSIsICJjbGVhbiIsICJNT19jb3VudHlfZ2VvbWV0cnkuY3N2IikpDQpCbGFja19wb3A8LSByZWFkLmNzdihoZXJlKCJkYXRhIiwgImNsZWFuIiwgIk1PX1JhY2VfQ2xlYW4uY3N2IikpDQpNT19zaGFwZXMgPC0gcmVhZC5jc3YoaGVyZSgiZGF0YSIsICJjbGVhbiIsICJNT19jb3VudHlfZ2VvbWV0cnkuY3N2IikpDQpgYGANCg0KYGBge3IgbG9hZC1jb3JyVGFibGUtZnVuY3Rpb259DQojI2xvYWQoaGVyZSgic291cmNlIiwgImNvcnJUYWJsZS5SIikpDQpgYGANCg0KDQpgYGB7ciBqb2luIGhlYXJ0LXBvcHVsYXRpb24tZGF0ZX0NCmhlYXJ0X2F0dGFja19kZW5zaXR5PC0gbGVmdF9qb2luKGhlYXJ0X2F0dGFja19kYXRhLCBwb3B1bGF0aW9uX2RhdGEsIGJ5ID0gIkdFT0lEIikNCmBgYA0KDQpgYGB7ciBnZW5lcmF0ZS1oZWFydC1hdHRhY2stZGVuc2l0eX0NCmhlYXJ0X2F0dGFja19kZW5zaXR5ICU+JQ0KICBtdXRhdGUoJ0hlYXJ0X0F0dGFja19EZW5zaXR5JyA9ICgoTnVtYmVyX29mX0hlYXJ0X2F0dGFja3MvUG9wdWxhdGlvbl9Fc3RpbWF0ZSkgKiAxMDAwMCkpICU+JQ0KICBzZWxlY3QoLSJOdW1iZXJfb2ZfSGVhcnRfYXR0YWNrcyIpLT4gaGVhcnRfYXR0YWNrX2RlbnNpdHkNCmBgYA0KDQoNCmBgYHtyIGNyZWF0ZS1ibGFjay1wb3AtcGVyY2VudH0NCmJsYWNrX3BlcmNlbnQgPC0gbGVmdF9qb2luKHBvcHVsYXRpb25fZGF0YSwgQmxhY2tfcG9wLCBieT0gIkdFT0lEIikNCg0KYmxhY2tfcG9wX3BlcmNlbnQ8LSBibGFja19wZXJjZW50ICU+JQ0KICBtdXRhdGUoJ1BlcmNlbnRfQmxhY2snID0gKE51bWJlcl9CbGFjay9Qb3B1bGF0aW9uX0VzdGltYXRlKSkgJT4lDQogIHNlbGVjdCgtIlBvcHVsYXRpb25fRXN0aW1hdGUiKQ0KYGBgDQoNCmBgYHtyIGpvaW4tYWxsLXRhYmxlc30NCmluY29tZV9yYW5raW5nczwtIGxlZnRfam9pbihjb3VudHlfcmFua2luZ3MsIGluY29tZV9kYXRhLCBieSA9ICJHRU9JRCIpDQpoZWFydF9pbmNvbWVfcmFua2luZ3MgPC0gbGVmdF9qb2luKGluY29tZV9yYW5raW5ncywgaGVhcnRfYXR0YWNrX2RhdGEsIGJ5ID0gIkdFT0lEIikNCmhlYXJ0X2luY29tZV9CbGFja19yYW5raW5ncyA8LSBsZWZ0X2pvaW4oaGVhcnRfaW5jb21lX3JhbmtpbmdzLCBibGFja19wb3BfcGVyY2VudCxieSA9ICJHRU9JRCIpDQpoZWFydF9hdHRhY2tfZmluYWw8LSBsZWZ0X2pvaW4oaGVhcnRfaW5jb21lX0JsYWNrX3JhbmtpbmdzLCBoZWFydF9hdHRhY2tfZGVuc2l0eSwgYnkgPSAiR0VPSUQiKQ0KdmFyaWFibGVzX2NvdW50aWVzIDwtIGxlZnRfam9pbihNT19zaGFwZXMsaGVhcnRfYXR0YWNrX2ZpbmFsLCBieT0gIkdFT0lEIikNCmBgYA0KDQoNCmBgYHtyIENvcnItVGFibGV9DQpjb3JyZWxhdGlvbl90YWJsZSA8LSBjb3JyVGFibGUoaGVhcnRfYXR0YWNrX2ZpbmFsLCBjb2VmPSAicGVhcnNvbiIsIGxpc3R3aXNlID0gVFJVRSwgcm91bmQgPSAzLCBwU3RhciA9IFQsIGBBZHVsdCBzbW9raW5nYCwgYEFkdWx0IG9iZXNpdHlgLCBgRm9vZCBlbnZpcm9ubWVudCBpbmRleGAsIGBQaHlzaWNhbCBpbmFjdGl2aXR5YCxgQWNjZXNzIHRvIGV4ZXJjaXNlIG9wcG9ydHVuaXRpZXNgLCBgTWVkaWFuX0luY29tZWAsIGBQZXJjZW50X0JsYWNrYCwgYEhlYXJ0X0F0dGFja19EZW5zaXR5YCkNCmBgYA0KDQpgYGB7cn0NCndyaXRlX2Nzdihjb3JyZWxhdGlvbl90YWJsZSwgaGVyZSgicmVzdWx0cyIsICJDb3JyZWxhdGlvbi5UYWJsZSIsICJjb3JyZWxhdGlvbi50YWJsZS5jc3YiKSkNCmBgYA0KDQoNCmBgYHtyIEdHcGxvdC12aW9saW4taGVhcnQtYXR0YWNrLWRlbnNpdHktaW5jb21lfQ0KZ2dwbG90KGRhdGEgPSBoZWFydF9hdHRhY2tfZmluYWwpICsNCiAgZ2VvbV92aW9saW4gKG1hcHBpbmcgPSBhZXMoeD0gSGVhcnRfQXR0YWNrX0RlbnNpdHksIHk9TWVkaWFuX0luY29tZSkpDQpgYGANCg0KYGBge3IgR0dwbG90LXNtb290aC1mb29kLWhlYXJ0LWF0dGFja30NCmdncGxvdChkYXRhID0gaGVhcnRfYXR0YWNrX2ZpbmFsKSArDQogIGdlb21fc21vb3RoIChtYXBwaW5nID0gYWVzKHg9IGBGb29kIGVudmlyb25tZW50IGluZGV4YCwgeSA9IEhlYXJ0X0F0dGFja19EZW5zaXR5KSkNCmBgYA0KDQoNCmBgYHtyfQ0KZ2dwbG90KCkgKw0KICBnZW9tX3NmKGRhdGEgPSB2YXJpYWJsZXNfY291bnRpZXMsIG1hcHBpbmcgPSBhZXMoZmlsbCA9IGBNZWRpYW5fSW5jb21lYCkpKw0KICBzY2FsZV9maWxsX3ZpcmlkaXNfYyhvcHRpb24gPSAiY2l2aWRpcyIsIG5hbWUgPSAiTWVkaWFuIEluY29tZSBcbiIsbGltaXRzID0gYygyMDAwMCw0MDAwMCksIGRpcmVjdGlvbiA9IC0xKSArDQogIGxhYnMoDQogICAgdGl0bGUgPSAiMjAxNyBJbmNvbWUgYnkgQ291bnR5IiwNCiAgICBzdWJ0aXRsZSA9ICJJbmZsYXRpb24tYWRqdXN0ZWQgRG9sbGFycyIsDQogICAgY2FwdGlvbiA9ICJEYXRhIGZyb20gdGhlIFVTIENlbnN1cyB0aHJvdWdoIHRoZSBBQ1MiDQogICkgKw0KICB0aGVtZV9taW5pbWFsKCkgLT4gR0dwbG90X01PXzIwMTdfaW5jb21lDQpHR3Bsb3RfTU9fMjAxN19pbmNvbWUNCmBgYA0KDQo=</div>
 
 
 

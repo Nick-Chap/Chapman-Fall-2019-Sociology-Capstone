@@ -128,12 +128,12 @@ ggplot() +
     subtitle = "Rate per 100,000 individuals",
     caption = "Data from the CDC & HP2020"
   ) +
-  theme_minimal() -> GGplot_2007_CHD
+  theme_void() -> GGplot_2007_CHD
 GGplot_2007_CHD
 ```
 
 ```{r save_ggplot_map1}
-ggsave(here("results", "maps", "GGplot_2007_CHD_Deaths.png"), GGplot_2007_CHD, dpi = 500)
+ggsave(width = 13.33, height = 6, units = "in",here("results", "maps", "GGplot_2007_CHD_Deaths.png"), GGplot_2007_CHD, dpi = 500)
 ```
 
 
@@ -144,14 +144,14 @@ ggplot() +
   labs(
     title = "2017 CHD Deaths by State",
     subtitle = "Rate per 100,000 individuals",
-    caption = "Data fron the CDC & HP2020"
+    caption = "Data from the CDC & HP2020"
   ) +
-  theme_minimal() -> GGplot_2017_CHD
+  theme_void() -> GGplot_2017_CHD
 GGplot_2017_CHD
 ``` 
 
 ```{r save_ggplot_map2}
-ggsave(here("results", "maps", "GGplot_2017_CHD_Deaths.png"), GGplot_2017_CHD, dpi = 500)
+ggsave(width = 13.33, height = 6, units = "in",here("results", "maps", "GGplot_2017_CHD_Deaths.png"), GGplot_2017_CHD, dpi = 500)
 ```
 
 ### Mapping National Income Data
@@ -196,10 +196,10 @@ ggplot() +
     subtitle = "Inflation-adjusted Dollars",
     caption = "Data from the US Census through the ACS"
   ) +
-  theme_minimal() -> GGplot_2017_income
+  theme_void() -> GGplot_2017_income
 GGplot_2017_income
 ```
 
 ```{r save_ggplot_map3}
-ggsave(here("results", "maps", "GGplot_2017_Income.png"), GGplot_2017_income, dpi = 500)
+ggsave(width = 13.33, height = 6, units = "in", here("results", "maps", "GGplot_2017_Income.png"), GGplot_2017_income, dpi = 500)
 ```
