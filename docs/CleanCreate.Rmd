@@ -119,7 +119,8 @@ For the Income data, `variable` and `moe` are unnecessary and I will remove them
 ```{r select-income-vars}
 MO_Income_Clean<- MO_Income %>%
   select("GEOID", "estimate") %>%
-  rename(`Median_Income` = "estimate")
+  rename(`Median_Income` = "estimate") %>%
+  mutate(`Above Average Income` = ifelse(Median_Income >= 21990.54, T, F))
 ```
 
 ### Clean Population Data
@@ -159,7 +160,9 @@ County_Rankings_Clean <- County_Rankings_Clean[-c(1,2),]
 I only want the variables useful to join and project data (GEOID, Geography):
 
 ```{r}
-moCounties <- select(moCounties, GEOID, geometry)
+moCounties <- moCounties %>%
+  select( GEOID, geometry) %>%
+   transform( GEOID = as.numeric(GEOID))
 ```
 
 Now, I want to write this as a `.shp` object:
@@ -174,7 +177,6 @@ Now, all of my tables have the same 'GEOID', all of the county level data could 
 So, I want to save all of my tables as `.csv` files:
 
 ```{r save-csv-files}
-write_csv(moCounties, here("data", "clean", "MO_county_geometry.csv"))
 write_csv(MO_Income_Clean, here("data", "clean", "MO_Income_Clean.csv"))
 write_csv(MO_population_Clean, here("data", "clean", "MO_population_Clean.csv"))
 write_csv(MO_Race_Clean, here("data", "clean", "MO_Race_Clean.csv"))

@@ -36,13 +36,12 @@ county_rankings<- read_csv(here("data", "clean", "County_Rankings_Clean.csv"))
 income_data<- read_csv(here("data", "clean", "MO_Income_Clean.csv"))
 population_data<- read.csv(here("data", "clean", "MO_population_Clean.csv"))
 heart_attack_data<- read.csv(here("data", "clean", "Heart_Attack_Clean.csv"))
-MO_counties<- read.csv(here("data", "clean", "MO_county_geometry.csv"))
+MO_counties<- read_sf(here("data", "clean", "moCounties.shp"))
 Black_pop<- read.csv(here("data", "clean", "MO_Race_Clean.csv"))
-MO_shapes <- read.csv(here("data", "clean", "MO_county_geometry.csv"))
 ```
 
 ```{r load-corrTable-function}
-##load(here("source", "corrTable.R"))
+source(here("source", "corrTable.R"))
 ```
 
 
@@ -70,7 +69,7 @@ income_rankings<- left_join(county_rankings, income_data, by = "GEOID")
 heart_income_rankings <- left_join(income_rankings, heart_attack_data, by = "GEOID")
 heart_income_Black_rankings <- left_join(heart_income_rankings, black_pop_percent,by = "GEOID")
 heart_attack_final<- left_join(heart_income_Black_rankings, heart_attack_density, by = "GEOID")
-variables_counties <- left_join(MO_shapes,heart_attack_final, by= "GEOID")
+variables_counties <- left_join(MO_counties,heart_attack_final, by= "GEOID")
 ```
 
 
@@ -83,27 +82,95 @@ write_csv(correlation_table, here("results", "Correlation.Table", "correlation.t
 ```
 
 
-```{r GGplot-violin-heart-attack-density-income}
-ggplot(data = heart_attack_final) +
-  geom_violin (mapping = aes(x= Heart_Attack_Density, y=Median_Income))
+```{r GGplot-income-activity}
+ggplot(data = heart_attack_final, mapping = aes(x= `Physical inactivity`, y=Median_Income)) +
+  geom_point () +
+  geom_smooth(method = "lm") -> income_activity_plot
+
+print(income_activity_plot + labs(title="Median Income and Physical Activity of Missouri Counties",
+                      y="Median Income (in dollars)", x = "Physically Active Adults (%)"))
+
+ggsave(here("results", "plots", "income_activity_plot.png"), width = 7, height = 4, units = "in", dpi = 500)
 ```
 
-```{r GGplot-smooth-food-heart-attack}
-ggplot(data = heart_attack_final) +
-  geom_smooth (mapping = aes(x= `Food environment index`, y = Heart_Attack_Density))
+```{r GGplot-heart_attack_income_lm}
+ggplot(data = heart_attack_final, mapping = aes(x= `Heart_Attack_Density`, y = `Median_Income`)) +
+  geom_point (position = "jitter")+
+  geom_smooth(method = "lm") -> Income_Heart_attack_lm
+
+print(Income_Heart_attack_lm + labs(title="Median Income and Heart Attack Density of Missouri Counties",
+                      y="Median Income (in dollars)", x = "Density of Heart Attacks"))
+
+ggsave(here("results", "plots", "Income_Heart_attack_lm.png"), width = 7, height = 4, units = "in", dpi = 500)
 ```
+
+
+```{r GGplot-income-activity}
+ggplot(data = heart_attack_final, mapping = aes(x= `Food environment index`, y=Median_Income)) +
+  geom_point () +
+  geom_smooth(method = "lm") -> Food_income_plot
+
+print(Food_income_plot + labs(title="Median Income and Food Environment of Missouri Counties",
+                      y="Median Income (in dollars)", x = "Food Environment Index"))
+
+ggsave(here("results", "plots", "Food_income_plot.png"), width = 7, height = 4, units = "in", dpi = 500)
+```
+
+```{r GGplot-income-smoking}
+ggplot(data = heart_attack_final, mapping = aes(x= `Adult smoking`, y=Median_Income)) +
+  geom_point (position = "jitter") +
+  geom_smooth(method = "lm") -> smoking_income_plot
+
+print(smoking_income_plot + labs(title="Median Income and Smoking of Missouri Counties",
+                      y="Median Income (in dollars)", x = "Adult Smokers (%)"))
+
+ggsave(here("results", "plots", "smoking_income_plot.png"), width = 7, height = 4, units = "in", dpi = 500)
+```
+
+```{r GGplot-heart-smoking}
+ggplot(data = heart_attack_final, mapping = aes(x= `Heart_Attack_Density`, y=`Adult smoking`)) +
+  geom_point (position = "jitter") +
+  geom_smooth(method = "lm") -> heart_smoking_plot
+
+print(heart_smoking_plot + labs(title="Smoking and Heart Attacks in Missouri Counties",
+                      y="Adult smokers (%)", x = "Density of Heart Attacks"))
+
+ggsave(here("results", "plots", "heart_smoking_plot.png"), width = 7, height = 4, units = "in", dpi = 500)
+```
+
+
 
 
 ```{r}
 ggplot() +
   geom_sf(data = variables_counties, mapping = aes(fill = `Median_Income`))+
-  scale_fill_viridis_c(option = "cividis", name = "Median Income \n",limits = c(20000,40000), direction = -1) +
+  scale_fill_viridis_c(option = "cividis", name = "Median Income",limits = c(10000,40000), direction = -1) +
   labs(
-    title = "2017 Income by County",
+    title = "2017 Missouri \nIncome by County",
     subtitle = "Inflation-adjusted Dollars",
     caption = "Data from the US Census through the ACS"
   ) +
-  theme_minimal() -> GGplot_MO_2017_income
+  theme_void() -> GGplot_MO_2017_income
 GGplot_MO_2017_income
 ```
+```{r}
+ggsave(width = 13.33, height = 6, units = "in",here("results", "maps", "GGplot_MO_income.png"), GGplot_MO_2017_income, dpi = 500)
+```
 
+
+```{r}
+ggplot() +
+  geom_sf(data = variables_counties, mapping = aes(fill = `Heart_Attack_Density`))+
+  scale_fill_viridis_c(option = "cividis", name = "Per Capita \nHeart Attacks", limits= c(1,80), direction = -1) +
+  labs(
+    title = "2017 Missouri \nHeart Attacks by County",
+    subtitle = "Rate per 10,000 individuals",
+    caption = "Data from Missouri Department of Health and Human Services"
+  ) +
+  theme_void() -> GGplot_MO_2017_Heart_Attacks
+ GGplot_MO_2017_Heart_Attacks
+```
+
+```{r}
+ggsave(width = 13.33, height = 6, units = "in",here("results", "maps", "GGplot_MO_Heart_Attacks.png"),  GGplot_MO_2017_Heart_Attacks, dpi = 500)
+```
