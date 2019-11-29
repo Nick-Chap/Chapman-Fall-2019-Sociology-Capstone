@@ -96,6 +96,9 @@ Heart_Attack_Clean<- Heart_Attack_MO %>%
   select("FIPS Code", "Count" ) %>%
   rename(`Number_of_Heart_attacks` = "Count" ) %>%
   mutate(Number_of_Heart_attacks = ifelse(Number_of_Heart_attacks == 'X', 0, Number_of_Heart_attacks))
+
+Heart_Attack_Clean[-c(3, 23, 56, 94),] -> Heart_Attack_Clean
+  
 ```
 
 Now, I want to rename `FIPS Code` to `GEOID` and make it the same value as the income and population data:
@@ -168,7 +171,7 @@ moCounties <- moCounties %>%
 Now, I want to write this as a `.shp` object:
 
 ```{r}
-st_write(moCounties, here("data", "clean", "moCounties.shp"))
+#st_write(moCounties, here("data", "clean", "moCounties.shp"))
 ```
 
 

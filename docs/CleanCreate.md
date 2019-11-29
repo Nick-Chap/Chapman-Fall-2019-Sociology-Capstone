@@ -1,7 +1,7 @@
 Create Clean Data
 ================
 Nick chapman
-(October 15, 2019)
+(November 29, 2019)
 
 ## Introduction
 
@@ -521,11 +521,15 @@ I will first clean up my tables, removing unnecessary variables:
 ### Clean Heart Attack Data
 
 For the heart attack data,`Mapped Value`, `X6`, and `Rank` are
-unnecessary, for I will rank them myself
-later:
+unnecessary, for I will rank them myself later:
 
 ``` r
-Heart_Attack_Clean<- select(Heart_Attack_MO, -"X6", -"Rank", -"Mapped Value" )
+Heart_Attack_Clean<- Heart_Attack_MO %>%
+  select("FIPS Code", "Count" ) %>%
+  rename(`Number_of_Heart_attacks` = "Count" ) %>%
+  mutate(Number_of_Heart_attacks = ifelse(Number_of_Heart_attacks == 'X', 0, Number_of_Heart_attacks))
+
+Heart_Attack_Clean[-c(3, 23, 56, 94),] -> Heart_Attack_Clean
 ```
 
 Now, I want to rename `FIPS Code` to `GEOID` and make it the same value
@@ -550,7 +554,10 @@ For the Income data, `variable` and `moe` are unnecessary and I will
 remove them:
 
 ``` r
-MO_Income_Clean<- select(MO_Income, -"variable", -"moe")
+MO_Income_Clean<- MO_Income %>%
+  select("GEOID", "estimate") %>%
+  rename(`Median_Income` = "estimate") %>%
+  mutate(`Above Average Income` = ifelse(Median_Income >= 21990.54, T, F))
 ```
 
 ### Clean Population Data
@@ -558,27 +565,29 @@ MO_Income_Clean<- select(MO_Income, -"variable", -"moe")
 For the population data, `variable` is unnecessary and I will remove it:
 
 ``` r
-MO_population_Clean<- select(MO_population, -"variable")
+MO_population_Clean<- MO_population %>%
+                         select("GEOID", "estimate") %>%
+  rename(`Population_Estimate` = "estimate")
 ```
 
 ### Clean Race Data
 
-I want to eliminate `variable` and
-`moe`:
+I want to eliminate `variable` and `moe`:
 
 ``` r
-MO_Race_Clean<- select(MO_Race, -"variable", -"moe")
+MO_Race_Clean<- MO_Race %>%
+  select("GEOID", "estimate") %>%
+  rename(`Number_Black` = "estimate")
 ```
 
 ### Clean County Ranking Data
 
 ``` r
-County_Rankings_Clean <- select(county_rankings, "X1", "X3", "Adult smoking", "Adult obesity", "Food environment index", "Physical inactivity", "Access to exercise opportunities")
+County_Rankings_Clean <- select(county_rankings, "X1",  "Adult smoking", "Adult obesity", "Food environment index", "Physical inactivity", "Access to exercise opportunities")
 ```
 
 ``` r
 County_Rankings_Clean <- rename(County_Rankings_Clean, GEOID = "X1")
-County_Rankings_Clean <- rename(County_Rankings_Clean, County = "X3")
 County_Rankings_Clean <- County_Rankings_Clean[-c(1,2),]
 ```
 
@@ -588,20 +597,16 @@ I only want the variables useful to join and project data (GEOID,
 Geography):
 
 ``` r
-moCounties <- select(moCounties, GEOID, geometry)
+moCounties <- moCounties %>%
+  select( GEOID, geometry) %>%
+   transform( GEOID = as.numeric(GEOID))
 ```
 
-Now, I want to write this as a `.shp`
-    object:
+Now, I want to write this as a `.shp` object:
 
 ``` r
-st_write(moCounties, here("data", "clean", "moCounties.shp"))
+#st_write(moCounties, here("data", "clean", "moCounties.shp"))
 ```
-
-    ## Writing layer `moCounties' to data source `C:/Users/nickc/OneDrive/Documents/GitHub/Chapman-Fall-2019-Sociology-Capstone/data/clean/moCounties.shp' using driver `ESRI Shapefile'
-    ## features:       115
-    ## fields:         1
-    ## geometry type:  Polygon
 
 Now, all of my tables have the same ‘GEOID’, all of the county level
 data could now be joined together.
@@ -609,7 +614,6 @@ data could now be joined together.
 So, I want to save all of my tables as `.csv` files:
 
 ``` r
-write_csv(moCounties, here("data", "clean", "MO_county_geometry.csv"))
 write_csv(MO_Income_Clean, here("data", "clean", "MO_Income_Clean.csv"))
 write_csv(MO_population_Clean, here("data", "clean", "MO_population_Clean.csv"))
 write_csv(MO_Race_Clean, here("data", "clean", "MO_Race_Clean.csv"))
